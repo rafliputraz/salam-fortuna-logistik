@@ -10,7 +10,7 @@ import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP } from '@/lib/motion
  * Elements that cross the line together are animated as one batch with a
  * stagger, so a grid of cards reads as a single move rather than four
  * independent ones. Content is pre-hidden in CSS and un-hidden here, so a
- * reduced-motion visitor — or a failed script — still sees everything.
+ * reduced-motion visitor, or a failed script, still sees everything.
  */
 export default function Reveal({ children }: { children: React.ReactNode }) {
   const scope = useRef<HTMLDivElement>(null)
@@ -40,6 +40,31 @@ export default function Reveal({ children }: { children: React.ReactNode }) {
             overwrite: true,
           }),
       })
+
+      // Every trigger on the page is measured once. Webfonts arriving, the
+      // FAQ settling and the like all change the page's height afterwards,
+      // which would leave triggers further down in the wrong place, so
+      // re-measure whenever the height actually moves.
+      let timer = 0
+      let lastHeight = document.documentElement.scrollHeight
+      const remeasure = () => {
+        window.clearTimeout(timer)
+        timer = window.setTimeout(() => {
+          const h = document.documentElement.scrollHeight
+          if (h !== lastHeight) {
+            lastHeight = h
+            ScrollTrigger.refresh()
+          }
+        }, 150)
+      }
+      const ro = new ResizeObserver(remeasure)
+      ro.observe(document.body)
+      document.fonts?.ready.then(() => ScrollTrigger.refresh())
+
+      return () => {
+        ro.disconnect()
+        window.clearTimeout(timer)
+      }
     },
     { scope }
   )

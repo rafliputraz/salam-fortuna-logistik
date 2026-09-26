@@ -1,27 +1,25 @@
 import type { AppProps } from 'next/app'
-import { Big_Shoulders_Display, Instrument_Sans, JetBrains_Mono } from 'next/font/google'
+import { Bricolage_Grotesque, Martian_Mono, Onest } from 'next/font/google'
 import SmoothScroll from '@/components/SmoothScroll'
 import '@/styles/globals.css'
 
-// Display: Big Shoulders comes out of Chicago's industrial signage. Tall,
-// condensed, stencil-straight: the lettering on a hull or a terminal gate.
-const display = Big_Shoulders_Display({
+// Display: a chunky grotesk with character, like stencilled lettering on
+// painted steel. Its optical-size axis keeps huge headlines tight.
+const display = Bricolage_Grotesque({
   subsets: ['latin'],
-  weight: ['600', '800', '900'],
+  axes: ['opsz', 'wdth'],
   display: 'swap',
 })
 
-// Body: a quiet grotesk that holds up at 15px on a dark ground.
-const body = Instrument_Sans({
+// Body: a friendly, very legible grotesk.
+const body = Onest({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
   display: 'swap',
-  // next/font ships no metric overrides for this face yet.
-  adjustFontFallback: false,
 })
 
-// Data: port codes, references, times.
-const mono = JetBrains_Mono({
+// Data: container codes, port codes, labels.
+const mono = Martian_Mono({
   subsets: ['latin'],
   weight: ['400', '500'],
   display: 'swap',

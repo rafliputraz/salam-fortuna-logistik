@@ -3,13 +3,14 @@ import Agency from '@/components/Agency'
 import Contact from '@/components/Contact'
 import CtaBand from '@/components/CtaBand'
 import Faq from '@/components/Faq'
-import PortBand from '@/components/PortBand'
+import Hero from '@/components/Hero'
+import Journey from '@/components/Journey'
+import PortTrain from '@/components/PortTrain'
 import Reveal from '@/components/Reveal'
-import ShipStory from '@/components/ShipStory'
+import Services from '@/components/Services'
 import SiteFooter from '@/components/SiteFooter'
 import SiteHeader from '@/components/SiteHeader'
 import Standards from '@/components/Standards'
-import Voyage from '@/components/Voyage'
 import { COMPANY } from '@/lib/company'
 
 const TITLE = `${COMPANY.legalName} | Freight forwarding & ship agency, ${COMPANY.basePort.city}`
@@ -23,7 +24,7 @@ export default function Home() {
         <title>{TITLE}</title>
         <meta name="description" content={DESCRIPTION} />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <meta name="theme-color" content="#08121a" />
+        <meta name="theme-color" content="#f5f6f9" />
         <meta property="og:title" content={TITLE} />
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:type" content="website" />
@@ -38,24 +39,23 @@ export default function Home() {
         Skip to content
       </a>
 
-      <div className="grain">
-        <SiteHeader />
+      <SiteHeader />
 
-        <Reveal>
-          <main id="main" tabIndex={-1}>
-            <ShipStory />
-            <PortBand />
-            <Voyage />
-            <Agency />
-            <Standards />
-            <Faq />
-            <Contact />
-            <CtaBand />
-          </main>
-        </Reveal>
+      <Reveal>
+        <main id="main" tabIndex={-1}>
+          <Hero />
+          <PortTrain />
+          <Services />
+          <Journey />
+          <Agency />
+          <Standards />
+          <Faq />
+          <Contact />
+          <CtaBand />
+        </main>
+      </Reveal>
 
-        <SiteFooter />
-      </div>
+      <SiteFooter />
     </>
   )
 }

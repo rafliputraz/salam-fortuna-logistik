@@ -12,24 +12,23 @@
 
   html {
     -webkit-text-size-adjust: 100%;
-    color-scheme: dark;
-    background: oklch(var(--c-abyss));
+    background: oklch(var(--c-paper));
   }
 
   body {
-    @apply bg-abyss font-sans text-foam antialiased;
+    @apply bg-paper font-sans text-ink antialiased;
     font-size: 1.0625rem;
     line-height: 1.6;
   }
 
   ::selection {
     background: oklch(var(--c-signal));
-    color: oklch(var(--c-foam));
+    color: oklch(var(--c-paper));
   }
 
   /* Shown instantly, never animated in. */
   :focus-visible {
-    outline: 2px solid oklch(var(--c-signal-lift));
+    outline: 2.5px solid oklch(var(--c-box-cobalt));
     outline-offset: 3px;
   }
 
@@ -45,7 +44,6 @@
     min-width: 0;
   }
 
-  /* Lenis owns the scroll; native smooth scrolling would fight it. */
   html.lenis,
   html.lenis body {
     height: auto;
@@ -64,41 +62,35 @@
   .t-display {
     font-family: var(--font-display);
     font-weight: 800;
-    line-height: 0.88;
-    letter-spacing: -0.005em;
-    text-transform: uppercase;
+    font-variation-settings: 'opsz' 96, 'wdth' 88;
+    line-height: 0.9;
+    letter-spacing: -0.035em;
   }
 
   .t-head {
     font-family: var(--font-display);
-    font-weight: 800;
-    line-height: 0.95;
-    letter-spacing: 0.005em;
-    text-transform: uppercase;
+    font-weight: 700;
+    font-variation-settings: 'opsz' 48, 'wdth' 92;
+    line-height: 1;
+    letter-spacing: -0.02em;
   }
 
   .t-label {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 500;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-  }
-
-  /* Outlined display type: an unpainted stencil. */
-  .t-stencil {
-    color: transparent;
-    -webkit-text-stroke: 1.5px oklch(var(--c-rule-strong));
   }
 
   .shell {
     @apply mx-auto w-full max-w-shell px-4 sm:px-6 md:px-10;
   }
 
-  /* ---- Controls: pills, pressed like a real switch ---------------------- */
+  /* ---- Controls: pills that press like a switch ------------------------ */
 
   .btn {
-    @apply inline-flex select-none items-center justify-center gap-3 whitespace-nowrap rounded-full px-6 py-3.5 text-[0.95rem] font-medium;
+    @apply inline-flex select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-full px-6 py-3.5 text-[0.95rem] font-semibold;
     transition:
       transform var(--dur-press) var(--ease-out),
       background-color var(--dur-hover) ease,
@@ -111,72 +103,66 @@
   }
 
   .btn-signal {
-    @apply btn bg-signal-deep text-foam;
+    @apply btn bg-signal-deep text-paper;
+  }
+
+  .btn-ink {
+    @apply btn bg-ink text-paper;
   }
 
   .btn-line {
-    @apply btn border border-foam/30 text-foam;
-  }
-
-  .btn-foam {
-    @apply btn bg-foam text-abyss;
+    @apply btn border-2 border-ink/15 text-ink;
   }
 
   @media (hover: hover) and (pointer: fine) {
     .btn-signal:hover {
       @apply bg-signal;
     }
-    .btn-line:hover {
-      @apply border-foam/70 bg-foam/5;
+    .btn-ink:hover {
+      @apply bg-ink/85;
     }
-    .btn-foam:hover {
-      @apply bg-foam/90;
+    .btn-line:hover {
+      @apply border-ink/40;
     }
     .btn-arrow {
       transition: transform var(--dur-hover) var(--ease-out);
     }
-    .btn:hover .btn-arrow,
     .btn-signal:hover .btn-arrow,
-    .btn-line:hover .btn-arrow,
-    .btn-foam:hover .btn-arrow {
+    .btn-ink:hover .btn-arrow,
+    .btn-line:hover .btn-arrow {
       transform: translateX(3px);
     }
   }
 
-  .btn-signal:disabled,
-  .btn-line:disabled {
-    @apply cursor-not-allowed opacity-50;
-  }
-
   .glass {
-    @apply border border-foam/10 bg-hull/70;
-    backdrop-filter: blur(18px) saturate(140%);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
-    box-shadow: inset 0 1px 0 oklch(var(--c-foam) / 0.08);
+    @apply border border-ink/10 bg-paper/80;
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    box-shadow: 0 8px 30px -18px oklch(var(--c-ink) / 0.35);
   }
 
   @media (prefers-reduced-transparency: reduce) {
     .glass {
-      @apply bg-hull;
+      @apply bg-paper;
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
     }
   }
 
   .navlink {
-    @apply relative text-[0.92rem] text-steel;
+    @apply relative text-[0.92rem] font-medium text-ink-2;
     transition: color var(--dur-hover) ease;
   }
 
   .navlink::after {
     content: '';
-    @apply absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-signal;
+    @apply absolute -bottom-1 left-0 h-[2px] w-full origin-left scale-x-0 bg-signal;
     transition: transform var(--dur-hover) var(--ease-out);
   }
 
   @media (hover: hover) and (pointer: fine) {
     .navlink:hover {
-      @apply text-foam;
+      @apply text-ink;
     }
     .navlink:hover::after {
       transform: scaleX(1);
@@ -184,18 +170,197 @@
   }
 
   .field {
-    @apply w-full border-0 border-b border-rule-strong bg-transparent px-0 py-3 font-sans text-lg text-foam placeholder:text-fog focus:border-signal-lift focus:outline-none;
+    @apply w-full border-0 border-b-2 border-ink/20 bg-transparent px-0 py-2.5 font-sans text-lg text-ink placeholder:text-ink-3 focus:border-box-cobalt focus:outline-none;
     border-radius: var(--radius-none);
     transition: border-color var(--dur-hover) ease;
   }
 
   .field[aria-invalid='true'] {
-    @apply border-signal-lift;
+    @apply border-signal;
+  }
+
+  /* ---- Container paint --------------------------------------------------
+     A container's colour arrives as --c. Corrugation is drawn with gradients
+     so any element can wear it: flat panels, 3D faces, door leaves. */
+
+  .steel {
+    background-color: var(--c);
+    background-image:
+      linear-gradient(to bottom, rgb(0 0 0 / 0.22), transparent 7%, transparent 93%, rgb(0 0 0 / 0.28)),
+      repeating-linear-gradient(
+        90deg,
+        rgb(0 0 0 / 0.16) 0 1px,
+        transparent 1px calc(var(--rib, 10px) * 0.35),
+        rgb(255 255 255 / 0.14) calc(var(--rib, 10px) * 0.35) calc(var(--rib, 10px) * 0.5),
+        transparent calc(var(--rib, 10px) * 0.5) var(--rib, 10px)
+      );
+  }
+
+  /* Door end: two leaves, a centre seam and four locking bars. */
+  .steel-door {
+    background-color: color-mix(in oklch, var(--c) 86%, black);
+    background-image:
+      linear-gradient(90deg, transparent 49.2%, rgb(0 0 0 / 0.45) 49.2% 50.8%, transparent 50.8%),
+      linear-gradient(
+        90deg,
+        transparent 13%,
+        rgb(255 255 255 / 0.35) 13% 15%,
+        transparent 15% 35%,
+        rgb(255 255 255 / 0.35) 35% 37%,
+        transparent 37% 63%,
+        rgb(255 255 255 / 0.35) 63% 65%,
+        transparent 65% 85%,
+        rgb(255 255 255 / 0.35) 85% 87%,
+        transparent 87%
+      ),
+      linear-gradient(to bottom, rgb(0 0 0 / 0.25), transparent 8%, transparent 92%, rgb(0 0 0 / 0.3));
+  }
+
+  /* ---- A container in CSS 3D ------------------------------------------
+     Sized from --u so a whole yard scales together. The box itself is a
+     zero-size anchor; each face is centred on it and pushed out to its side. */
+
+  .box3d {
+    --l: calc(var(--u) * 12);
+    --h: calc(var(--u) * 2.6);
+    --d: calc(var(--u) * 2.45);
+    --rib: calc(var(--u) * 0.42);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+  }
+
+  .box3d .box-body {
+    position: absolute;
+    transform-style: preserve-3d;
+  }
+
+  .box3d .face {
+    position: absolute;
+    left: 0;
+    top: 0;
+    backface-visibility: hidden;
+  }
+
+  .box3d .face-front,
+  .box3d .face-back {
+    width: var(--l);
+    height: var(--h);
+  }
+
+  .box3d .face-front {
+    transform: translate(-50%, -50%) translateZ(calc(var(--d) / 2));
+  }
+
+  .box3d .face-back {
+    transform: translate(-50%, -50%) rotateY(180deg) translateZ(calc(var(--d) / 2));
+    filter: brightness(0.72);
+  }
+
+  .box3d .face-end-r,
+  .box3d .face-end-l {
+    width: var(--d);
+    height: var(--h);
+  }
+
+  .box3d .face-end-r {
+    transform: translate(-50%, -50%) rotateY(90deg) translateZ(calc(var(--l) / 2));
+    filter: brightness(0.82);
+  }
+
+  .box3d .face-end-l {
+    transform: translate(-50%, -50%) rotateY(-90deg) translateZ(calc(var(--l) / 2));
+    filter: brightness(0.9);
+  }
+
+  .box3d .face-top {
+    width: var(--l);
+    height: var(--d);
+    transform: translate(-50%, -50%) rotateX(90deg) translateZ(calc(var(--h) / 2));
+    background-color: color-mix(in oklch, var(--c) 82%, white);
+    background-image: repeating-linear-gradient(90deg, rgb(0 0 0 / 0.08) 0 1px, transparent 1px calc(var(--u) * 1.2));
+  }
+
+  .box3d .face-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5em;
+    padding: 0 calc(var(--u) * 0.7);
+    color: rgb(255 255 255 / 0.95);
+    font-family: var(--font-mono);
+    font-size: calc(var(--u) * 0.62);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-shadow: 0 1px 0 rgb(0 0 0 / 0.25);
+  }
+
+  /* ---- Door cards -------------------------------------------------------
+     A service card behind a pair of container doors. Hover, focus or a tap
+     swings them open; the content is always in the DOM underneath. */
+
+  .door-card {
+    perspective: 1400px;
+  }
+
+  .door-leaf {
+    transition: transform var(--dur-door) var(--ease-drawer);
+    backface-visibility: hidden;
+  }
+
+  .door-leaf-l {
+    transform-origin: left center;
+  }
+
+  .door-leaf-r {
+    transform-origin: right center;
+  }
+
+  .door-card[data-open='true'] .door-leaf-l {
+    transform: rotateY(-104deg);
+  }
+
+  .door-card[data-open='true'] .door-leaf-r {
+    transform: rotateY(104deg);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .door-card:hover .door-leaf-l {
+      transform: rotateY(-104deg);
+    }
+    .door-card:hover .door-leaf-r {
+      transform: rotateY(104deg);
+    }
+  }
+
+  .door-card:focus-within .door-leaf-l {
+    transform: rotateY(-104deg);
+  }
+
+  .door-card:focus-within .door-leaf-r {
+    transform: rotateY(104deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .door-leaf {
+      transition: opacity 150ms ease;
+    }
+    .door-card[data-open='true'] .door-leaf,
+    .door-card:focus-within .door-leaf {
+      transform: none;
+      opacity: 0;
+    }
   }
 
   /* ---- Reveal ---------------------------------------------------------- */
 
-  /* Pre-hidden only once _document has confirmed scripts run. */
   .js [data-reveal] {
     opacity: 0;
   }
@@ -208,17 +373,6 @@
 }
 
 @layer utilities {
-  /* Film grain on a fixed layer, never on anything that scrolls. */
-  .grain::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 70;
-    pointer-events: none;
-    opacity: 0.06;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-
   @keyframes sheet {
     from {
       opacity: 0;
@@ -233,7 +387,7 @@
   }
 
   .mask-fade-x {
-    -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
-    mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
   }
 }

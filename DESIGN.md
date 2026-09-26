@@ -4,51 +4,44 @@ Tokens live in `styles/tokens.css`; Tailwind maps them in `tailwind.config.js`.
 Never add a raw colour or font-family in a component: add a token first.
 
 ## World
-Night harbour. A dark, deep-water ground, one signal red taken from the SFL mark,
-condensed industrial display type. Motion carries the story; it is never ambient filler.
+A container yard at noon. Cool daylight-white paper, navy ink, and painted
+steel: the saturated colours of real boxes, in big blocks. One UI accent, the
+SFL red, for actions and identity. Container paint is illustration only.
 
 ## Colour (OKLCH)
 | Token | Use |
 | --- | --- |
-| `abyss` 15% 0.028 238 | page ground |
-| `hull` / `hold` | raised grounds, image placeholders |
-| `rule` / `rule-strong` | hairlines, stencil outlines |
-| `foam` / `steel` / `fog` | primary, secondary, tertiary text |
-| `signal` (+ `deep`, `lift`) | identity and action only; `deep` for button fills, `lift` for small red text |
+| `paper` / `paper-2` | page grounds |
+| `ink` / `ink-2` / `ink-3` | text, strongest to quietest |
+| `signal` / `signal-deep` | actions and identity only |
+| `box-*` (magenta, orange, cobalt, green, mustard, steel, red) | container paint, never UI chrome |
 | `go` | office-open state, used once |
 
-The page is dark-only by design (the cinematic hero depends on it). One accent. No second hue in UI.
+Light theme only, by design: the colour-block concept depends on it.
 
 ## Type
-- Display: Big Shoulders Display 800, uppercase, `.t-display` / `.t-head`. Never italic.
-- Body: Instrument Sans 400/500.
-- Data: JetBrains Mono, `.t-label` (uppercase, 0.14em). Labels, codes, captions only.
+- Display: Bricolage Grotesque 800, `opsz` 96, `wdth` 88 (`.t-display`, `.t-head`). Never italic.
+- Body: Onest 400/500/600.
+- Labels and codes: Martian Mono (`.t-label`).
 
 ## Shape
-Surfaces are square. Controls (buttons, chips, nav) are pills. Nothing in between.
+Surfaces and containers are square, like steel. Controls are pills.
+
+## Paint utilities
+- `.steel`: corrugated side of a box in `--c` (rib pitch `--rib`).
+- `.steel-door`: a door end with seam and locking bars.
+- `Box` (components/Box.tsx): a 40ft container in CSS 3D, sized by `--u`.
 
 ## Motion
-- Easing tokens `--ease-out`, `--ease-in-out`; press = `scale(0.97)` over 140ms.
-- Scroll story: `components/ShipStory.tsx` pins one screen and scrubs a camera through
-  five keyframes (`lib/ship/scene.ts`). Chapters cross-fade against the same progress.
-- Horizontal route: `components/Voyage.tsx`, desktop only.
-- One marquee per page (`PortBand`), velocity-reactive.
-- Every scroll effect has a reduced-motion path: no pins, still frame, plain text.
+- Hero: the stack is set down tier by tier on load; on scroll it pins, turns
+  ~70 degrees and opens into its tiers; it leans toward the mouse.
+- Port train: the page's one marquee, velocity-reactive.
+- Journey: pins on desktop; one box turns a quarter and repaints per leg.
+- Services: container doors swing open on hover, focus or tap.
+- Agency: the real ship photo sails across on scroll over drifting swell lines.
+- Promises: cards stack as sticky tiers.
+- Every scroll effect has a reduced-motion path (no pins; doors fade).
+- `Reveal` re-measures all triggers when the page height changes.
 
-## The hero scene
-A real container ship photograph (`public/images/ship/ship.webp`, cut out of
-its background with a segmentation model) lifted into 3D relief by a depth map
-(`ship-depth.png`, estimated offline with Depth Anything V2; sharp across the
-hull and stow, softened on thin rigging so masts don't tear). `lib/ship/photo.ts`
-displaces a dense mesh by that depth, drops each column so the hull sits on the
-water, and folds the canvas below the waterline flat onto the sea as the foam
-skirt. The sea is `lib/ship/water.ts`, a port of three.js's reflective `Water`
-(MIT) with a normal map of real water; sky and wake are in `lib/ship/sea.ts`.
-
-Scrolling swings the camera round her (`ARC` in `lib/ship/scene.ts`): from the
-photographer's exact angle, out past her stern quarter, up over the stow and
-round toward her bow. A photo only has one side, so the arc stays within about
-25 degrees either way; a full 360 would need a textured 3D model of the ship.
-
-Earlier hero experiments are in git history: a procedural 3D ship with a full
-orbit (9dc56c0) and a terminal photo rebuilt in depth (edd4787).
+Earlier directions (dark cinematic WebGL hero with a ship on a reflective sea)
+are in git history, last at c490814.

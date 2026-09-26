@@ -1,36 +1,43 @@
-/* Hallmark · macrostructure: Scroll Voyage (bespoke) · tone: cinematic-industrial · anchor hue: 27 (SFL signal red)
- * theme: custom · vibe: "night harbour, sodium haze, stencilled steel"
- * paper oklch(15% 0.028 238) · accent oklch(58.6% 0.225 27.6) · Big Shoulders Display + Instrument Sans + JetBrains Mono
- * axes: dark / display-condensed / warm · nav: N5 floating pill · footer: Ft5 statement
+/* Hallmark · macrostructure: Stacked Yard (bespoke) · tone: playful-industrial · anchor hue: 27 (SFL signal red)
+ * theme: custom · vibe: "container yard at noon, painted steel, bold stencils"
+ * paper oklch(97.6% 0.004 250) · accent oklch(58.6% 0.225 27.6) · Bricolage Grotesque + Onest + Martian Mono
+ * axes: light / display-heavy grotesk / warm · nav: N5 floating pill · footer: Ft5 statement
  * Hallmark · pre-emit critique: P5 H4 E4 S5 R4 V5
  *
  * Every colour, face, space, ease and duration on the site is named here.
- * Colours are stored as bare OKLCH channels so Tailwind can add alpha.
+ * Colours are bare OKLCH channels so Tailwind can add alpha.
  */
 :root {
-  /* Grounds: deep water at night, never pure black. */
-  --c-abyss: 15% 0.028 238;
-  --c-hull: 19% 0.032 238;
-  --c-hold: 23% 0.034 238;
-  --c-rule: 32% 0.03 236;
-  --c-rule-strong: 44% 0.03 234;
+  /* Grounds: cool daylight white, not cream. */
+  --c-paper: 97.6% 0.004 250;
+  --c-paper-2: 94.2% 0.007 250;
+  --c-line: 87% 0.01 250;
+  --c-line-strong: 72% 0.015 255;
 
-  /* Type on the dark grounds. */
-  --c-foam: 95% 0.008 220;
-  --c-steel: 76% 0.018 230;
-  --c-fog: 62% 0.02 232;
+  /* Ink: a deep navy, never pure black. */
+  --c-ink: 20% 0.035 262;
+  --c-ink-2: 42% 0.025 260;
+  --c-ink-3: 55% 0.02 258;
 
-  /* The one accent: the red of the SFL mark. Identity and action only. */
+  /* The one UI accent: the red of the SFL mark. Actions and identity only. */
   --c-signal: 58.6% 0.225 27.6;
   --c-signal-deep: 50% 0.2 27;
-  --c-signal-lift: 70% 0.18 28;
+
+  /* Container paint. Illustration only, never UI chrome. */
+  --c-box-magenta: 60% 0.22 355;
+  --c-box-orange: 70% 0.175 48;
+  --c-box-cobalt: 47% 0.17 262;
+  --c-box-green: 56% 0.12 160;
+  --c-box-mustard: 80% 0.15 85;
+  --c-box-steel: 68% 0.025 250;
+  --c-box-red: 55% 0.19 27;
 
   /* Semantic state, used once: office open. */
-  --c-go: 76% 0.14 160;
+  --c-go: 60% 0.15 155;
 
-  --font-display: 'Big Shoulders Display', system-ui, sans-serif;
-  --font-body: 'Instrument Sans', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Onest', system-ui, sans-serif;
+  --font-mono: 'Martian Mono', ui-monospace, monospace;
 
   /* 4pt scale. */
   --space-2xs: 0.25rem;
@@ -44,21 +51,19 @@
   --space-4xl: 6rem;
   --space-5xl: 8rem;
 
-  --text-display: clamp(3.1rem, 9.2vw, 8.6rem);
-  --text-display-s: clamp(2.5rem, 6.4vw, 5.6rem);
-  --text-4xl: clamp(2rem, 4.2vw, 3.5rem);
+  --text-display: clamp(3rem, 7.4vw, 7.25rem);
+  --text-display-s: clamp(2.4rem, 5.4vw, 5rem);
+  --text-4xl: clamp(2rem, 3.8vw, 3.4rem);
 
-  --rule-hair: 1px;
-
-  /* Surfaces are square; controls are pills. That is the whole rule. */
+  /* Surfaces are square like steel; controls are pills. */
   --radius-none: 0;
   --radius-pill: 999px;
 
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
   --dur-press: 140ms;
   --dur-hover: 220ms;
-  --dur-reveal: 700ms;
+  --dur-door: 560ms;
 }

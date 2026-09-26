@@ -1,6 +1,17 @@
 [
   {
     "date": "2026-09-26",
+    "macrostructure": "Stacked Yard (bespoke: CSS 3D container hero, door-card wall, pinned journey)",
+    "theme": "custom",
+    "theme_axes": "light / display-heavy grotesk / warm",
+    "vibe": "container yard at noon, painted steel, bold stencils",
+    "enrichment": "E-custom: CSS 3D containers, real ship photo sail-by",
+    "nav": "N5 floating pill",
+    "footer": "Ft5 statement (stacked boxes)",
+    "brief": "PT Salam Fortuna Logistik: company profile, colour-block redesign"
+  },
+  {
+    "date": "2026-09-26",
     "macrostructure": "Scroll Voyage (bespoke: pinned WebGL flight + horizontal route)",
     "theme": "custom",
     "theme_axes": "dark / display-condensed / warm",

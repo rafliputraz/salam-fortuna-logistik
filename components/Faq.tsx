@@ -17,7 +17,6 @@ export default function Faq() {
   useGSAP(
     () => {
       const panels = gsap.utils.toArray<HTMLElement>('[data-panel]', scope.current)
-      // Snap shut on the first pass so the section doesn't play a collapse.
       const instant = !mounted.current || prefersReducedMotion()
       mounted.current = true
       panels.forEach((panel, i) => {
@@ -30,25 +29,30 @@ export default function Faq() {
   )
 
   return (
-    <section ref={scope} id="faq" className="bg-abyss py-24 md:py-36">
+    <section ref={scope} id="faq" className="bg-paper-2 py-24 md:py-32">
       <div className="shell grid gap-12 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-4">
           <div className="lg:sticky lg:top-28">
-            <h2 data-reveal className="t-display text-[length:var(--text-4xl)] text-foam">
+            <h2 data-reveal className="t-display text-[length:var(--text-4xl)] text-ink">
               Before you ask us.
             </h2>
-            <p data-reveal className="mt-6 max-w-sm leading-relaxed text-steel">
-              If yours is not here, put it in the enquiry below. We answer questions we
-              have not been paid for.
+            <p data-reveal className="mt-5 max-w-sm leading-relaxed text-ink-2">
+              If yours is not here, put it on the booking label below. We answer
+              questions we have not been paid for.
             </p>
           </div>
         </div>
 
-        <dl data-reveal className="border-t border-rule lg:col-span-8">
+        <dl data-reveal className="lg:col-span-8">
           {FAQ.map((item, i) => {
             const isOpen = i === openIndex
             return (
-              <div key={item.q} className="border-b border-rule">
+              <div
+                key={item.q}
+                className={`mb-3 border-2 transition-colors duration-200 ${
+                  isOpen ? 'border-ink bg-paper' : 'border-ink/10 bg-paper/60'
+                }`}
+              >
                 <dt>
                   <button
                     type="button"
@@ -56,16 +60,18 @@ export default function Faq() {
                     aria-expanded={isOpen}
                     aria-controls={`faq-panel-${i}`}
                     id={`faq-button-${i}`}
-                    className="group flex w-full items-start justify-between gap-8 py-7 text-left"
+                    className="flex w-full items-center justify-between gap-6 px-6 py-5 text-left"
                   >
+                    <span className="t-head text-[1.25rem] text-ink md:text-[1.45rem]">{item.q}</span>
                     <span
-                      className={`text-xl font-medium transition-colors duration-200 md:text-2xl ${
-                        isOpen ? 'text-foam' : 'text-steel group-hover:text-foam'
+                      aria-hidden="true"
+                      className={`relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-[transform,background-color] duration-300 ease-out ${
+                        isOpen ? 'rotate-45 bg-signal text-paper' : 'bg-ink/5 text-ink'
                       }`}
                     >
-                      {item.q}
+                      <span className="absolute h-[2px] w-3.5 bg-current" />
+                      <span className="absolute h-3.5 w-[2px] bg-current" />
                     </span>
-                    <Indicator open={isOpen} />
                   </button>
                 </dt>
                 <dd
@@ -75,7 +81,7 @@ export default function Faq() {
                   aria-labelledby={`faq-button-${i}`}
                   className="overflow-hidden"
                 >
-                  <p className="max-w-2xl pb-8 pr-10 leading-relaxed text-steel">{item.a}</p>
+                  <p className="max-w-2xl px-6 pb-6 leading-relaxed text-ink-2">{item.a}</p>
                 </dd>
               </div>
             )
@@ -83,20 +89,5 @@ export default function Faq() {
         </dl>
       </div>
     </section>
-  )
-}
-
-/** A plus that turns to a cross when its answer is showing. */
-function Indicator({ open }: { open: boolean }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={`relative mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-[transform,background-color,border-color] duration-300 ease-out ${
-        open ? 'rotate-45 border-signal bg-signal' : 'border-rule-strong'
-      }`}
-    >
-      <span className="absolute h-px w-3.5 bg-foam" />
-      <span className="absolute h-3.5 w-px bg-foam" />
-    </span>
   )
 }

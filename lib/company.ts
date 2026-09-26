@@ -36,48 +36,6 @@ export const COMPANY = {
 } as const
 
 /**
- * The scroll story over the ship. One chapter per camera move; the copy is
- * what the shot is showing.
- */
-export const CHAPTERS = [
-  {
-    id: 'arrival',
-    label: 'Arrival',
-    title: 'We clear the port before your ship arrives.',
-    body:
-      'Freight forwarding and ship agency out of Panjang. Sea freight, customs, trucking and husbandry, one team on one file.',
-  },
-  {
-    id: 'sea',
-    label: 'Sea freight',
-    title: 'Booked direct with the lines.',
-    body:
-      'FCL, LCL, breakbulk and project cargo through Panjang and the main Indonesian gateways. A rate from the carrier, not a broker quoting a broker.',
-  },
-  {
-    id: 'file',
-    label: 'One file',
-    title: 'Every box, on one file.',
-    body:
-      'Empty release, stuffing, sailing, clearance, delivery. The same team carries your shipment the whole way, so nothing is lost between desks.',
-  },
-  {
-    id: 'agency',
-    label: 'Ship agency',
-    title: 'One call for the master.',
-    body:
-      'Port clearance, crew change, bunkers and stores, arranged by one agent who reports to the owner for the whole call.',
-  },
-  {
-    id: 'inland',
-    label: 'Delivery',
-    title: 'Cleared, and on the road.',
-    body:
-      'PEB and PIB filed, permits in hand, and trucks from the terminal to the door across Lampung and on through Bakauheni.',
-  },
-] as const
-
-/**
  * The five legs of a shipment, in the order they actually happen. The
  * numbering on the page is load-bearing: this is a sequence, not a list.
  */
@@ -116,6 +74,49 @@ export const VOYAGE = [
     body:
       'Trucking from the terminal to the door across Lampung and onward through Bakauheni, on a trucker network we hold accountable ourselves.',
     detail: ['Terminal to door', 'Cross-Sumatra haulage', 'Delivery proof'],
+  },
+] as const
+
+/**
+ * What we do, as the six doors on the services wall. Every line here is
+ * drawn from services the company already describes elsewhere on the page.
+ */
+export const SERVICES = [
+  {
+    title: 'Sea freight',
+    body: 'Import, export and inter-island moves, booked direct with the lines rather than through a broker.',
+    detail: ['FCL & LCL', 'Import & export', 'Domestic inter-island'],
+    color: 'cobalt',
+  },
+  {
+    title: 'Customs & documents',
+    body: 'Our team files it; you approve it before anything is submitted.',
+    detail: ['PEB / PIB filing', 'B/L & COO', 'Permits & licences'],
+    color: 'magenta',
+  },
+  {
+    title: 'Inland delivery',
+    body: 'Terminal to door across Lampung and on through Bakauheni, on truckers we hold to account.',
+    detail: ['Terminal to door', 'Cross-Sumatra haulage', 'Delivery proof'],
+    color: 'orange',
+  },
+  {
+    title: 'Ship agency',
+    body: 'An agent for the whole port call, with one point of contact for the master.',
+    detail: ["Owner's protective", "Charterer's", 'Full agency'],
+    color: 'red',
+  },
+  {
+    title: 'Husbandry',
+    body: 'Crew, cash and supplies arranged before the ship is alongside.',
+    detail: ['Crew change', 'Cash to master', 'Bunkers & stores'],
+    color: 'green',
+  },
+  {
+    title: 'Breakbulk & project',
+    body: 'Cargo that does not fit a standard box, planned with the equipment it needs.',
+    detail: ['Breakbulk', 'Project cargo', 'Special equipment'],
+    color: 'mustard',
   },
 ] as const
 
@@ -221,9 +222,9 @@ export const FAQ = [
 ] as const
 
 export const NAV = [
-  { href: '#voyage', label: 'What we handle' },
+  { href: '#services', label: 'What we do' },
+  { href: '#journey', label: 'How it moves' },
   { href: '#agency', label: 'Ship agency' },
-  { href: '#standards', label: 'How we work' },
   { href: '#contact', label: 'Contact' },
 ] as const
 

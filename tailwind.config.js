@@ -10,20 +10,31 @@ module.exports = {
     extend: {
       // Every colour resolves to a token in styles/tokens.css.
       colors: {
-        abyss: token('abyss'),
-        hull: token('hull'),
-        hold: token('hold'),
-        rule: {
-          DEFAULT: token('rule'),
-          strong: token('rule-strong'),
+        paper: {
+          DEFAULT: token('paper'),
+          2: token('paper-2'),
         },
-        foam: token('foam'),
-        steel: token('steel'),
-        fog: token('fog'),
+        line: {
+          DEFAULT: token('line'),
+          strong: token('line-strong'),
+        },
+        ink: {
+          DEFAULT: token('ink'),
+          2: token('ink-2'),
+          3: token('ink-3'),
+        },
         signal: {
           DEFAULT: token('signal'),
           deep: token('signal-deep'),
-          lift: token('signal-lift'),
+        },
+        box: {
+          magenta: token('box-magenta'),
+          orange: token('box-orange'),
+          cobalt: token('box-cobalt'),
+          green: token('box-green'),
+          mustard: token('box-mustard'),
+          steel: token('box-steel'),
+          red: token('box-red'),
         },
         go: token('go'),
       },
@@ -33,11 +44,7 @@ module.exports = {
         mono: ['var(--font-mono)'],
       },
       maxWidth: {
-        shell: '88rem',
-      },
-      transitionTimingFunction: {
-        out: 'var(--ease-out)',
-        'in-out': 'var(--ease-in-out)',
+        shell: '90rem',
       },
     },
   },
