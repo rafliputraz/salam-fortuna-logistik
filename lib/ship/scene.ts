@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { buildPhotoShip, BOW, HEADING, photoPoint, STERN } from './photo'
-import { buildSky, buildWake, buildWater, HAZE } from './sea'
+import { buildSky, buildWake, HAZE, SUN_DIR } from './sea'
+import { Ocean } from './water'
 
 /**
  * One camera move per chapter, in the ship's frame (x across the photo,
@@ -70,8 +71,17 @@ export function createShipScene(canvas: HTMLCanvasElement, onReady?: () => void)
 
   const { sky, uniforms: skyU } = buildSky()
   scene.add(sky)
-  const { water, uniforms: waterU } = buildWater()
-  scene.add(water)
+  const normals = new THREE.TextureLoader().load('/images/ship/waternormals.jpg')
+  normals.wrapS = normals.wrapT = THREE.RepeatWrapping
+  const ocean = new Ocean({
+    normals,
+    sunDirection: SUN_DIR,
+    sunColor: '#aeb6bd',
+    waterColor: '#1c2b32',
+    distortionScale: 24,
+    size: 1.6,
+  })
+  scene.add(ocean)
 
   // Everything that sails: the photo, its reflection, and its wake.
   const vessel = new THREE.Group()
@@ -93,7 +103,6 @@ export function createShipScene(canvas: HTMLCanvasElement, onReady?: () => void)
     map.colorSpace = THREE.SRGBColorSpace
     map.anisotropy = renderer.capabilities.getMaxAnisotropy()
     photo = buildPhotoShip(map)
-    bobber.add(photo.reflection)
     bobber.add(photo.hull)
     if (!running) frame()
     onReady?.()
@@ -116,6 +125,8 @@ export function createShipScene(canvas: HTMLCanvasElement, onReady?: () => void)
     const h = canvas.clientHeight
     if (!w || !h) return
     renderer.setSize(w, h, false)
+    const dpr = renderer.getPixelRatio()
+    ocean.setMirrorSize(w * dpr * 0.6, h * dpr * 0.6)
     camera.aspect = w / h
     const isPortrait = camera.aspect < 0.85
     camera.fov = isPortrait ? 52 : 34
@@ -140,8 +151,7 @@ export function createShipScene(canvas: HTMLCanvasElement, onReady?: () => void)
     // She makes way the whole time; the sea streams past in the opposite sense.
     flow.x += HEADING.x * dt * 7
     flow.y += HEADING.z * dt * 7
-    waterU.uTime.value = time
-    waterU.uFlow.value.copy(flow)
+    ocean.update(time * 0.7, flow)
     wakeU.uTime.value = time
     wakeU.uFlow.value.copy(flow)
     skyU.uTime.value = time
@@ -208,6 +218,8 @@ export function createShipScene(canvas: HTMLCanvasElement, onReady?: () => void)
         mats.forEach((m) => m.dispose())
       })
       photo?.hull.material && (photo.hull.material as THREE.ShaderMaterial).uniforms.uMap.value.dispose()
+      normals.dispose()
+      ocean.target.dispose()
       renderer.dispose()
     },
   }

@@ -73,12 +73,10 @@ export function buildPhotoShip(map: THREE.Texture) {
     uHaze: { value: 0 },
     uHazeCol: { value: HAZE },
     uPad: { value: PAD / (1 + PAD) },
-    uReflect: { value: 0 },
   }
 
-  const makeMat = (reflect: boolean) =>
-    new THREE.ShaderMaterial({
-      uniforms: { ...uniforms, uReflect: { value: reflect ? 1 : 0 } },
+  const material = new THREE.ShaderMaterial({
+    uniforms,
       transparent: true,
       depthWrite: false,
       depthTest: false,
@@ -99,7 +97,6 @@ export function buildPhotoShip(map: THREE.Texture) {
         uniform float uHaze;
         uniform vec3 uHazeCol;
         uniform float uPad;
-        uniform float uReflect;
         ${NOISE_GLSL}
 
         vec4 sampleShip(vec2 uv) {
@@ -109,32 +106,21 @@ export function buildPhotoShip(map: THREE.Texture) {
 
         void main() {
           vec2 uv = vec2(vUv.x, (vUv.y - uPad) / (1.0 - uPad));
-          vec4 c;
-          if (uReflect > 0.5) {
-            // Broken up by the swell, softened, and gone within a few metres.
-            float wob = (fbm(vec2(vUv.y * 40.0 - uTime * 0.6, vUv.x * 6.0)) - 0.5) * 0.02;
-            vec2 ruv = uv + vec2(wob, 0.0);
-            c = (sampleShip(ruv) + sampleShip(ruv + vec2(0.0, 0.012)) + sampleShip(ruv - vec2(0.0, 0.012))) / 3.0;
-            // Strongest right at the waterline, fading down the reflected stack.
-            c.a *= 0.13 * (1.0 - smoothstep(0.02, 0.4, uv.y));
-            c.rgb *= 0.7;
-          } else {
-            c = sampleShip(uv);
-            // Grade toward the overcast: a touch cooler, a touch less contrast.
-            c.rgb = mix(c.rgb, vec3(dot(c.rgb, vec3(0.3, 0.59, 0.11))), 0.08);
-            c.rgb = pow(c.rgb, vec3(1.05)) * vec3(0.93, 0.96, 1.0);
+          vec4 c = sampleShip(uv);
+          // Grade toward the overcast: a touch cooler, a touch less contrast.
+          c.rgb = mix(c.rgb, vec3(dot(c.rgb, vec3(0.3, 0.59, 0.11))), 0.08);
+          c.rgb = pow(c.rgb, vec3(1.05)) * vec3(0.93, 0.96, 1.0);
 
-            // White water churning along the waterline.
-            float e = texture2D(uEdge, vec2(vUv.x, 0.5)).r;
-            float fromTop = 1.0 - uv.y;
-            float below = fromTop - e;
-            if (e > 0.9 && e < 0.999) {
-              float band = (1.0 - smoothstep(0.0, 0.05, below)) * smoothstep(-0.012, 0.0, below);
-              float n = fbm(vec2(vUv.x * 160.0 + uFlowX * 0.25, fromTop * 55.0 - uTime * 0.9));
-              float foam = band * smoothstep(0.38, 0.72, n);
-              c.rgb = mix(c.rgb, vec3(0.86, 0.9, 0.92), foam * (1.0 - c.a));
-              c.a = max(c.a, foam * 0.85);
-            }
+          // White water churning along the waterline.
+          float e = texture2D(uEdge, vec2(vUv.x, 0.5)).r;
+          float fromTop = 1.0 - uv.y;
+          float below = fromTop - e;
+          if (e > 0.9 && e < 0.999) {
+            float band = (1.0 - smoothstep(0.0, 0.05, below)) * smoothstep(-0.012, 0.0, below);
+            float n = fbm(vec2(vUv.x * 160.0 + uFlowX * 0.25, fromTop * 55.0 - uTime * 0.9));
+            float foam = band * smoothstep(0.38, 0.72, n);
+            c.rgb = mix(c.rgb, vec3(0.86, 0.9, 0.92), foam * (1.0 - c.a));
+            c.a = max(c.a, foam * 0.85);
           }
           c.rgb = mix(c.rgb, uHazeCol, uHaze);
           gl_FragColor = c;
@@ -149,18 +135,11 @@ export function buildPhotoShip(map: THREE.Texture) {
   const top = WATERLINE_PX * M_PER_PX
   geo.translate(0, top - h / 2, 0)
 
-  const hull = new THREE.Mesh(geo, makeMat(false))
+  const hull = new THREE.Mesh(geo, material)
   hull.renderOrder = 3
   hull.frustumCulled = false
 
-  const reflection = new THREE.Mesh(geo, makeMat(true))
-  reflection.scale.y = -1
-  reflection.renderOrder = 2
-  reflection.frustumCulled = false
+  const set = (key: 'uTime' | 'uFlowX' | 'uHaze', v: number) => (uniforms[key].value = v)
 
-  const mats = [hull.material, reflection.material] as THREE.ShaderMaterial[]
-  const set = (key: 'uTime' | 'uFlowX' | 'uHaze', v: number) =>
-    mats.forEach((m) => (m.uniforms[key].value = v))
-
-  return { hull, reflection, set }
+  return { hull, set }
 }
