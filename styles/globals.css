@@ -1,0 +1,297 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-surface font-sans text-ink antialiased;
+  }
+
+  ::selection {
+    background: theme('colors.brand.DEFAULT');
+    color: #fff;
+  }
+
+  /* One visible focus treatment for the whole site. */
+  :focus-visible {
+    outline: 2px solid theme('colors.brand.600');
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Focus on the dark grounds needs the lighter red to stay visible. */
+  .on-dark :focus-visible {
+    outline-color: theme('colors.brand.300');
+  }
+
+  /* Keeps anchored sections clear of the fixed header. */
+  :target,
+  section[id],
+  main[id] {
+    scroll-margin-top: 6rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@layer components {
+  /* ---- Type roles ------------------------------------------------------ */
+
+  /* Display: Archivo pushed wide, like lettering stencilled on a hull.
+     The width axis pulls back to normal on small screens — expanded caps do
+     not fit a phone, and shrinking the size instead would lose the impact. */
+  .t-display {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-variation-settings: 'wdth' 100, 'wght' 700;
+    line-height: 0.94;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  .t-display-sm {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-variation-settings: 'wdth' 100, 'wght' 700;
+    line-height: 1;
+    letter-spacing: -0.012em;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 768px) {
+    .t-display {
+      font-variation-settings: 'wdth' 118, 'wght' 700;
+      line-height: 0.92;
+      letter-spacing: -0.025em;
+    }
+
+    .t-display-sm {
+      font-variation-settings: 'wdth' 112, 'wght' 700;
+    }
+  }
+
+  /* Data: port codes, reference numbers, labels, eyebrows. */
+  .t-data {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* ---- Structure ------------------------------------------------------- */
+
+  .shell {
+    @apply mx-auto w-full max-w-shell px-6 md:px-10;
+  }
+
+  /* Section eyebrow: a port-code marker plus a hairline running out to the
+     column edge. Inherits currentColor so it survives on any ground. */
+  .eyebrow {
+    @apply t-data flex items-center gap-4 text-ink-soft;
+  }
+
+  .eyebrow::after {
+    content: '';
+    @apply h-px flex-1 bg-current opacity-40;
+  }
+
+  /* ---- Controls -------------------------------------------------------- */
+
+  .btn {
+    @apply t-data inline-flex items-center justify-center gap-3 px-6 py-4 transition-colors duration-200;
+  }
+
+  .btn-primary {
+    @apply btn bg-brand-600 text-white hover:bg-brand;
+  }
+
+  .btn-ghost {
+    @apply btn border border-line-strong text-ink hover:bg-surface-sunken;
+  }
+
+  .btn-sm {
+    @apply px-5 py-3;
+  }
+
+  /* A round badge on a square button — the one borrowed gesture, kept as a
+     deliberate contrast against everything else being cornered. */
+  .btn-badge {
+    @apply -my-1 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20 transition-transform duration-300;
+  }
+
+  .btn-ghost .btn-badge {
+    @apply bg-ink/10;
+  }
+
+  /* Named against the concrete button classes: `.btn` is only ever reached
+     through @apply, so a `.btn:hover` rule would be pruned as unused. */
+  .btn-arrow {
+    @apply transition-transform duration-300;
+  }
+
+  .btn:hover .btn-arrow,
+  .btn-primary:hover .btn-arrow,
+  .btn-ghost:hover .btn-arrow,
+  .btn:hover .btn-badge,
+  .btn-primary:hover .btn-badge,
+  .btn-ghost:hover .btn-badge {
+    transform: translateX(4px);
+  }
+
+  /* The masthead capsules. The only round-cornered surfaces on the page.
+     Opaque enough to stay readable where the bar floats over the dark
+     husbandry section, not just over the light ones. */
+  .navpill {
+    @apply rounded-full border border-line bg-surface/95 backdrop-blur-md;
+    box-shadow: 0 10px 30px -22px rgba(7, 32, 39, 0.5);
+  }
+
+  /* Nav link: a red tick draws in under the label, like a chart annotation. */
+  .navlink {
+    @apply t-data relative py-1 text-ink-soft transition-colors duration-200 hover:text-ink;
+  }
+
+  .navlink::after {
+    content: '';
+    @apply absolute -bottom-0.5 left-0 h-px w-full origin-left scale-x-0 bg-brand transition-transform duration-300;
+  }
+
+  .navlink:hover::after {
+    @apply scale-x-100;
+  }
+
+  .field {
+    @apply w-full border border-line bg-surface-raised px-4 py-3.5 font-sans text-ink transition-colors duration-200 placeholder:text-ink-soft/80 focus:border-brand focus:outline-none;
+  }
+
+  /* ---- Surfaces -------------------------------------------------------- */
+
+  .panel {
+    @apply border border-line bg-surface-raised;
+  }
+
+  /* Voyage legs. The red edge is the hover payoff — the only place the brand
+     colour appears outside of actions. */
+  .leg {
+    @apply relative border border-line bg-surface-raised p-6 transition-all duration-300 md:p-7;
+  }
+
+  .leg::before {
+    content: '';
+    @apply absolute left-0 top-0 h-full w-px origin-top scale-y-0 bg-brand transition-transform duration-300;
+  }
+
+  .leg:hover {
+    @apply border-line-strong;
+    box-shadow: 0 18px 40px -28px rgba(7, 32, 39, 0.45);
+  }
+
+  .leg:hover::before {
+    @apply scale-y-100;
+  }
+
+  /* ---- Voyage rail ------------------------------------------------------ */
+
+  /* Markers on the rail fill as the voyage is worked through, so the line
+     reads as progress rather than decoration. */
+  .node {
+    @apply relative z-10 flex h-7 w-7 shrink-0 items-center justify-center border border-line bg-surface transition-colors duration-500;
+  }
+
+  .node::after {
+    content: '';
+    @apply h-2 w-2 scale-50 bg-line-strong transition-all duration-500;
+  }
+
+  .node.is-lit {
+    @apply border-brand;
+  }
+
+  .node.is-lit::after {
+    @apply scale-100 bg-brand;
+  }
+
+  /* ---- Reveal ---------------------------------------------------------- */
+
+  /* Pre-hidden so nothing flashes before GSAP takes over — but only once the
+     inline bootstrap in _document has confirmed scripts are running. Without
+     JS, or with reduced motion, everything stays visible. */
+  .js [data-reveal],
+  .js [data-intro] {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js [data-reveal],
+    .js [data-intro] {
+      opacity: 1;
+    }
+  }
+}
+
+@layer utilities {
+  .ticker-track {
+    animation: ticker 46s linear infinite;
+  }
+
+  @keyframes ticker {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-track {
+      animation: none;
+    }
+  }
+
+  /* Faint chart grid, the way depth soundings sit under a nautical chart. */
+  .chart-grid {
+    background-image: linear-gradient(
+        to right,
+        rgba(7, 32, 39, 0.055) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, rgba(7, 32, 39, 0.055) 1px, transparent 1px);
+    background-size: 72px 72px;
+  }
+
+  .chart-grid-dark {
+    background-image: linear-gradient(
+        to right,
+        rgba(242, 239, 232, 0.06) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, rgba(242, 239, 232, 0.06) 1px, transparent 1px);
+    background-size: 72px 72px;
+  }
+
+  .mask-fade-x {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 7%,
+      black 93%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 7%,
+      black 93%,
+      transparent
+    );
+  }
+}
