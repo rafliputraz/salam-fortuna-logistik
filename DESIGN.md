@@ -36,19 +36,19 @@ Surfaces are square. Controls (buttons, chips, nav) are pills. Nothing in betwee
 - Every scroll effect has a reduced-motion path: no pins, still frame, plain text.
 
 ## The hero scene
-A to-scale container ship at dusk (`lib/ship/model.ts`: a hull lofted from
-cross-sections, ~2,600 instanced 40ft boxes, accommodation, funnel, nav
-lights) making way on a reflective sea (`lib/ship/water.ts`, a port of
-three.js's `Water` (MIT) that mirrors the real scene and ripples it with a
-normal map of real water, `public/images/ship/waternormals.jpg`). Sky and
-wake shaders are in `lib/ship/sea.ts`.
+A real container ship photograph (`public/images/ship/ship.webp`, cut out of
+its background with a segmentation model) lifted into 3D relief by a depth map
+(`ship-depth.png`, estimated offline with Depth Anything V2; sharp across the
+hull and stow, softened on thin rigging so masts don't tear). `lib/ship/photo.ts`
+displaces a dense mesh by that depth, drops each column so the hull sits on the
+water, and folds the canvas below the waterline flat onto the sea as the foam
+skirt. The sea is `lib/ship/water.ts`, a port of three.js's reflective `Water`
+(MIT) with a normal map of real water; sky and wake are in `lib/ship/sea.ts`.
 
-Scrolling turns the camera once round the ship (`lib/ship/scene.ts`,
-`orbit()`): off the port bow, broadside, rising over the stern, round the far
-side and back toward the bow as it pulls away. The orbit widens when she is
-broadside so all 330 m stay in frame, and the ship is framed right of the
-text on desktop, high in the frame on phones. three.js is dynamically
-imported; the CSS poster gradient carries the hero until it lands.
+Scrolling swings the camera round her (`ARC` in `lib/ship/scene.ts`): from the
+photographer's exact angle, out past her stern quarter, up over the stow and
+round toward her bow. A photo only has one side, so the arc stays within about
+25 degrees either way; a full 360 would need a textured 3D model of the ship.
 
-Earlier hero experiments are in git history: a cut-out ship photo on the
-sea (12342dd) and a terminal photo rebuilt in depth (edd4787).
+Earlier hero experiments are in git history: a procedural 3D ship with a full
+orbit (9dc56c0) and a terminal photo rebuilt in depth (edd4787).

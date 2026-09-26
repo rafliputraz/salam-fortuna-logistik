@@ -1,21 +1,34 @@
 import * as THREE from 'three'
-import { buildShip } from './model'
-import { buildFoam, buildSky, HAZE, SUN_DIR } from './sea'
+import { BOW, buildPhotoShip, HEADING, STERN } from './photo'
+import { buildSky, buildWake, HAZE, SUN_DIR } from './sea'
 import { Ocean } from './water'
 
 /**
- * The hero: a to-scale container ship making way at dusk, and a camera that
- * circles her as the page scrolls. One full turn over the story, starting
- * off the port bow, passing broadside, rising over the stern for a look down
- * the stow, round the far side and back toward the bow as it pulls away.
+ * The hero: the real ship, lifted into relief, making way on a reflective sea
+ * under an overcast sky, and a camera that swings round her as the page
+ * scrolls.
+ *
+ * The swing is a rotation, not a zoom. It opens on exactly the angle the
+ * photograph was taken from, swings out past her stern quarter, climbs to
+ * look down across the stow, then carries round toward her bow. A photo only
+ * has one side, so the arc stays within the angles the relief can hold.
  */
 
-/** Centre of the orbit: amidships, a little above the deck. */
-const CENTRE = new THREE.Vector3(0, 22, 0)
-/** Where the camera starts, as an angle round the ship (0 = dead ahead). */
-const START = THREE.MathUtils.degToRad(-38)
-/** How far round the camera travels over the whole story. */
-const SWEEP = THREE.MathUtils.degToRad(330)
+/** Centre of the orbit: amidships, about deck height. */
+const CENTRE = new THREE.Vector3(0, 40, 0)
+
+/**
+ * The swing through the story, as (angle in degrees round the ship, camera
+ * height in metres, distance in metres). 0 degrees is the photographer's
+ * position; negative swings toward her stern, positive toward her bow.
+ */
+const ARC: Array<[number, number, number]> = [
+  [0, 29, 600],
+  [-24, 34, 560],
+  [-6, 110, 540],
+  [18, 46, 560],
+  [24, 30, 650],
+]
 
 export type ShipScene = {
   setProgress: (p: number) => void
@@ -30,52 +43,68 @@ export function createShipScene(canvas: HTMLCanvasElement, onReady?: () => void)
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75))
   renderer.toneMapping = THREE.ACESFilmicToneMapping
-  renderer.toneMappingExposure = 1.1
+  renderer.toneMappingExposure = 0.92
   renderer.outputColorSpace = THREE.SRGBColorSpace
 
   const scene = new THREE.Scene()
-  scene.fog = new THREE.FogExp2(HAZE, 0.0005)
+  scene.fog = new THREE.FogExp2(HAZE, 0.0004)
   const camera = new THREE.PerspectiveCamera(34, 1, 0.5, 12000)
 
-  scene.add(new THREE.HemisphereLight('#a9bdd3', '#1a2530', 1.7))
-  const sun = new THREE.DirectionalLight('#ffc48f', 3.2)
-  sun.position.copy(SUN_DIR).multiplyScalar(1000)
-  scene.add(sun)
-  // Cool fill from the open-sky side, so the faces turned from the sun keep their colour.
-  const fill = new THREE.DirectionalLight('#8aa5c4', 1.5)
-  fill.position.set(-600, 500, 700)
-  scene.add(fill)
-
-  scene.add(buildSky())
-
-  const normals = new THREE.TextureLoader().load('/images/ship/waternormals.jpg', () => onReady?.())
+  const { sky, uniforms: skyU } = buildSky()
+  scene.add(sky)
+  const normals = new THREE.TextureLoader().load('/images/ship/waternormals.jpg')
   normals.wrapS = normals.wrapT = THREE.RepeatWrapping
   const ocean = new Ocean({
     normals,
     sunDirection: SUN_DIR,
-    sunColor: '#ffbf8c',
-    waterColor: '#0b1b23',
-    distortionScale: 14,
-    size: 1.3,
+    sunColor: '#aeb6bd',
+    waterColor: '#1c2b32',
+    distortionScale: 24,
+    size: 1.6,
   })
   scene.add(ocean)
 
-  const { foam, uniforms: foamU } = buildFoam()
-  scene.add(foam)
-  const { ship } = buildShip()
-  scene.add(ship)
-  const radar = ship.getObjectByName('radar')
+  // Everything that moves with her: the relief and its wake.
+  const vessel = new THREE.Group()
+  scene.add(vessel)
+  const { wake, uniforms: wakeU } = buildWake({
+    stern: STERN,
+    sternDir: new THREE.Vector2(-0.55, 0.84),
+    bow: BOW,
+    bowDir: new THREE.Vector2(0.42, 0.9),
+  })
+  vessel.add(wake)
+
+  // The photo and its depth map both have to land before she appears.
+  let photo: ReturnType<typeof buildPhotoShip> | null = null
+  const loader = new THREE.TextureLoader()
+  const src = window.innerWidth < 900 ? '/images/ship/ship-sm.webp' : '/images/ship/ship.webp'
+  Promise.all([loader.loadAsync(src), loader.loadAsync('/images/ship/ship-depth.png')]).then(
+    ([map, depth]) => {
+      map.colorSpace = THREE.SRGBColorSpace
+      map.anisotropy = renderer.capabilities.getMaxAnisotropy()
+      photo = buildPhotoShip(map, depth)
+      vessel.add(photo.hull)
+      if (!running) frame()
+      onReady?.()
+    }
+  )
+
+  const arc = (list: Array<[number, number, number]>) =>
+    new THREE.CatmullRomCurve3(list.map(([a, h, r]) => new THREE.Vector3(a, h, r)), false, 'centripetal')
+  let curve = arc(ARC)
+  let portrait = false
 
   let target = 0
   let current = 0
   let intro = 0
   let running = false
-  let portrait = false
   const clock = new THREE.Clock()
   const flow = new THREE.Vector2()
   const look = new THREE.Vector3()
   const toShip = new THREE.Vector3()
   const right = new THREE.Vector3()
+  const sample = new THREE.Vector3()
   const UP = new THREE.Vector3(0, 1, 0)
 
   function resize() {
@@ -86,54 +115,51 @@ export function createShipScene(canvas: HTMLCanvasElement, onReady?: () => void)
     const dpr = renderer.getPixelRatio()
     ocean.setMirrorSize(w * dpr * 0.6, h * dpr * 0.6)
     camera.aspect = w / h
-    portrait = camera.aspect < 0.85
-    camera.fov = portrait ? 52 : 34
+    const isPortrait = camera.aspect < 0.85
+    camera.fov = isPortrait ? 52 : 34
     camera.updateProjectionMatrix()
-  }
-
-  /** Place the camera on its orbit for story progress `p` (0 to 1). */
-  function orbit(p: number, time: number) {
-    // A slow drift on top of the scroll, so a still page still breathes.
-    const angle = START + p * SWEEP + Math.sin(time * 0.09) * 0.02
-    const side = Math.abs(Math.sin(angle))
-
-    // Stand further off when she is broadside, so all 330 m stay in frame.
-    let radius = (portrait ? 470 : 290) + (portrait ? 190 : 200) * side
-    radius += 160 * p * p * p // pulling away at the end
-    // Low on the water, rising over the stern mid-story, higher as she leaves.
-    const height = 12 + 95 * Math.sin(Math.PI * p) ** 2 + 60 * p * p
-
-    if (intro > 0) radius *= 1 + 0.45 * intro * intro * (3 - 2 * intro)
-
-    camera.position.set(Math.sin(angle) * radius, height, Math.cos(angle) * radius)
-
-    // Frame her to the right of the text on wide screens, high on phones.
-    look.copy(CENTRE)
-    toShip.subVectors(CENTRE, camera.position).setY(0).normalize()
-    right.crossVectors(toShip, UP).normalize()
-    if (portrait) look.y -= radius * 0.2
-    else look.addScaledVector(right, -radius * 0.17)
-    camera.lookAt(look)
+    if (isPortrait !== portrait) {
+      portrait = isPortrait
+      // A phone needs more distance to fit her length across a narrow frame.
+      curve = arc(portrait ? ARC.map(([a, h, r]) => [a, h, r * 1.45]) : ARC)
+    }
   }
 
   function frame() {
     const dt = Math.min(clock.getDelta(), 0.1)
     const time = clock.elapsedTime
     current += (target - current) * (1 - Math.exp(-dt * 5))
+    const p = THREE.MathUtils.clamp(current, 0, 1)
 
-    // She makes way along +z; the sea streams past the other way.
-    flow.y += dt * 6.5
+    // She makes way the whole time; the sea streams past in the opposite sense.
+    flow.x += HEADING.x * dt * 7
+    flow.y += HEADING.z * dt * 7
     ocean.update(time * 0.7, flow)
-    foamU.uTime.value = time
-    foamU.uFlow.value = flow.y
+    wakeU.uTime.value = time
+    wakeU.uFlow.value.copy(flow)
+    skyU.uTime.value = time
 
-    // A laden ship barely moves in a swell; the motion is felt, not seen.
-    ship.position.y = Math.sin(time * 0.55) * 0.28
-    ship.rotation.z = Math.sin(time * 0.42) * 0.0045
-    ship.rotation.x = Math.sin(time * 0.31 + 1.2) * 0.0022
-    if (radar) radar.rotation.y = time * 2.2
+    if (photo) {
+      photo.set('uTime', time)
+      photo.set('uFlowX', flow.x)
+      photo.hull.position.y = Math.sin(time * 0.5) * 0.35
+      photo.hull.rotation.z = Math.sin(time * 0.37) * 0.0035
+    }
 
-    orbit(THREE.MathUtils.clamp(current, 0, 1), time)
+    // Where the camera sits on its arc, with a slow drift so a still page breathes.
+    curve.getPoint(p, sample)
+    let radius = sample.z
+    if (intro > 0) radius *= 1 + 0.35 * intro * intro * (3 - 2 * intro)
+    const angle = THREE.MathUtils.degToRad(sample.x) + Math.sin(time * 0.11) * 0.012
+    camera.position.set(Math.sin(angle) * radius, sample.y, Math.cos(angle) * radius)
+
+    // Frame her to the right of the text on wide screens, high on phones.
+    look.copy(CENTRE)
+    toShip.subVectors(CENTRE, camera.position).setY(0).normalize()
+    right.crossVectors(toShip, UP).normalize()
+    if (portrait) look.y -= radius * 0.12
+    else look.addScaledVector(right, -radius * 0.2)
+    camera.lookAt(look)
     renderer.render(scene, camera)
   }
 
@@ -173,11 +199,13 @@ export function createShipScene(canvas: HTMLCanvasElement, onReady?: () => void)
         const mesh = obj as THREE.Mesh
         mesh.geometry?.dispose()
         const mats = Array.isArray(mesh.material) ? mesh.material : mesh.material ? [mesh.material] : []
-        mats.forEach((m) => {
-          Object.values(m).forEach((val) => val instanceof THREE.Texture && val.dispose())
-          m.dispose()
-        })
+        mats.forEach((m) => m.dispose())
       })
+      if (photo) {
+        const u = (photo.hull.material as THREE.ShaderMaterial).uniforms
+        u.uMap.value.dispose()
+        u.uDepth.value.dispose()
+      }
       normals.dispose()
       ocean.target.dispose()
       renderer.dispose()

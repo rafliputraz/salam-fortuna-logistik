@@ -18,11 +18,11 @@ type Mode = 'motion' | 'static'
 /**
  * The hero and the story in one pinned stage.
  *
- * A container ship, modelled to scale in WebGL and making way on a
- * reflective sea, holds the screen while the page scrolls. The scroll turns
- * the camera once around her (off the bow, broadside, up over the stern,
- * round the far side) and each part of the turn carries one line of what
- * we do.
+ * A real container ship, photographed, cut out and lifted into 3D relief
+ * with a depth map, holds the screen on a reflective sea while the page
+ * scrolls. The scroll swings the camera round her (off her stern quarter,
+ * up over the stow, round toward her bow) and each part of the swing
+ * carries one line of what we do.
  *
  * Reduced motion drops the pin and the flight. The ship is rendered once as
  * a still behind the hero and the chapters are set as ordinary text below.
