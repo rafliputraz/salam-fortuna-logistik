@@ -35,16 +35,25 @@ Surfaces are square. Controls (buttons, chips, nav) are pills. Nothing in betwee
 - One marquee per page (`PortBand`), velocity-reactive.
 - Every scroll effect has a reduced-motion path: no pins, still frame, plain text.
 
-## The ship
-The hero ship is a photograph (`public/images/ship/ship.webp`, cut out of its
-background with a segmentation model, 1750×860). `lib/ship/photo.ts` stands it
-upright at real scale (~280 m) as a billboard with a graded, foam-edged shader
-`lib/ship/water.ts` is the sea: a port of three.js's reflective `Water`
-(MIT) that mirrors the real scene each frame and ripples it with a normal map
-of real water (`public/images/ship/waternormals.jpg`, from the three.js repo),
-tuned for wind chop. `lib/ship/sea.ts` holds the overcast sky and the
-stern/bow wake, all lit to match the photo. `lib/ship/scene.ts`
-moves the camera through five shots that stay close to the photo's own angle
-and the photographer's ~29 m eye height, then sails the ship off into the haze.
-three.js is dynamically imported; the CSS poster gradient carries the hero
-until the ship texture lands.
+## The hero scene
+The hero is a single photograph of a container terminal, rebuilt in depth
+(`lib/terminal/scene.ts`):
+
+- `public/images/terminal/photo.webp`: the photo (2000x1334).
+- `depth.png`: a depth map estimated offline with Depth Anything V2, dilated
+  a few pixels so object edges keep their own depth. It lifts a 520x347 mesh
+  into relief in the vertex shader.
+- `mask.png`: the same depth, undilated; per pixel it decides what is sky.
+- `sky.webp`: the sky with the cranes painted out (OpenCV inpainting), set
+  far behind the relief and drifting slowly.
+
+Seen from the origin with the photo's field of view the scene is exactly the
+photograph. Shots magnify with lens zoom and move the camera only 10-20 m,
+because the relief holds up to modest moves only; the view is clamped so it
+never runs past the photo's edges. Portrait screens use gentler zoom.
+The chapter text moves to the right when a shot's subject is on the left,
+and the scrim follows it. three.js is dynamically imported; the CSS poster
+gradient carries the hero until the images land.
+
+An earlier version used a cut-out ship photo on a reflective sea; it is in
+git history at commit 12342dd if it is ever wanted back.
