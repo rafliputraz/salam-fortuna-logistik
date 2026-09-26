@@ -18,12 +18,12 @@ type Mode = 'motion' | 'static'
 /**
  * The hero and the story in one pinned stage.
  *
- * A container ship, modelled to scale in WebGL, holds the screen while the
- * page scrolls; the scroll drives a camera that works round her in five
- * moves (off the bow, down the hull, overhead, the bridge wing, astern), and
- * each move carries one line of what we do. Motion here is the narrative,
- * not decoration: every chapter is framed on the part of the ship it is
- * about.
+ * A real container ship, cut out of a photograph and set on a rendered sea
+ * in WebGL, holds the screen while the page scrolls. The scroll drives a
+ * camera through five moves (the whole ship, along the hull, into the
+ * stow, up at the bridge, and standing off as she sails away), and each
+ * move carries one line of what we do. Every chapter is framed on the part
+ * of the ship it is about.
  *
  * Reduced motion drops the pin and the flight. The ship is rendered once as
  * a still behind the hero and the chapters are set as ordinary text below.
@@ -50,7 +50,7 @@ export default function ShipStory() {
     import('@/lib/ship/scene')
       .then(({ createShipScene }) => {
         if (cancelled || !canvas.current) return
-        const scene = createShipScene(canvas.current)
+        const scene = createShipScene(canvas.current, () => !cancelled && setReady(true))
         sceneRef.current = scene
         const still = prefersReducedMotion()
 
@@ -72,7 +72,6 @@ export default function ShipStory() {
           )
           if (stage.current) io.observe(stage.current)
         }
-        requestAnimationFrame(() => !cancelled && setReady(true))
       })
       .catch(() => setGlFailed(true))
 
@@ -234,7 +233,7 @@ export default function ShipStory() {
             aria-label="Story chapters"
             className="pointer-events-none absolute bottom-10 right-6 hidden lg:block xl:right-10"
           >
-            <div className="relative flex gap-5">
+            <div className="glass relative flex gap-5 px-5 py-4">
               <span className="relative w-px self-stretch bg-foam/15">
                 <span
                   data-hud-fill

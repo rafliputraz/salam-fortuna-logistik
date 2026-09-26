@@ -36,7 +36,12 @@ Surfaces are square. Controls (buttons, chips, nav) are pills. Nothing in betwee
 - Every scroll effect has a reduced-motion path: no pins, still frame, plain text.
 
 ## The ship
-`lib/ship/model.ts` builds a 330 m post-Panamax vessel from lofted cross-sections,
-instanced 40ft boxes (seeded, so the stow never changes), accommodation, funnel and
-nav lights. `lib/ship/sea.ts` holds sky, ocean and foam shaders. three.js is
-dynamically imported; the CSS poster gradient carries the hero until it lands.
+The hero ship is a photograph (`public/images/ship/ship.webp`, cut out of its
+background with a segmentation model, 1750×860). `lib/ship/photo.ts` stands it
+upright at real scale (~280 m) as a billboard with a graded, foam-edged shader
+and a faint rippled reflection. `lib/ship/sea.ts` holds the overcast sky, the
+ocean and the stern/bow wake, all lit to match the photo. `lib/ship/scene.ts`
+moves the camera through five shots that stay close to the photo's own angle
+and the photographer's ~29 m eye height, then sails the ship off into the haze.
+three.js is dynamically imported; the CSS poster gradient carries the hero
+until the ship texture lands.
