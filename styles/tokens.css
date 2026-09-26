@@ -1,0 +1,64 @@
+/* Hallmark · macrostructure: Scroll Voyage (bespoke) · tone: cinematic-industrial · anchor hue: 27 (SFL signal red)
+ * theme: custom · vibe: "night harbour, sodium haze, stencilled steel"
+ * paper oklch(15% 0.028 238) · accent oklch(58.6% 0.225 27.6) · Big Shoulders Display + Instrument Sans + JetBrains Mono
+ * axes: dark / display-condensed / warm · nav: N5 floating pill · footer: Ft5 statement
+ * Hallmark · pre-emit critique: P5 H4 E4 S5 R4 V5
+ *
+ * Every colour, face, space, ease and duration on the site is named here.
+ * Colours are stored as bare OKLCH channels so Tailwind can add alpha.
+ */
+:root {
+  /* Grounds: deep water at night, never pure black. */
+  --c-abyss: 15% 0.028 238;
+  --c-hull: 19% 0.032 238;
+  --c-hold: 23% 0.034 238;
+  --c-rule: 32% 0.03 236;
+  --c-rule-strong: 44% 0.03 234;
+
+  /* Type on the dark grounds. */
+  --c-foam: 95% 0.008 220;
+  --c-steel: 76% 0.018 230;
+  --c-fog: 62% 0.02 232;
+
+  /* The one accent: the red of the SFL mark. Identity and action only. */
+  --c-signal: 58.6% 0.225 27.6;
+  --c-signal-deep: 50% 0.2 27;
+  --c-signal-lift: 70% 0.18 28;
+
+  /* Semantic state, used once: office open. */
+  --c-go: 76% 0.14 160;
+
+  --font-display: 'Big Shoulders Display', system-ui, sans-serif;
+  --font-body: 'Instrument Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* 4pt scale. */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --space-4xl: 6rem;
+  --space-5xl: 8rem;
+
+  --text-display: clamp(3.1rem, 9.2vw, 8.6rem);
+  --text-display-s: clamp(2.5rem, 6.4vw, 5.6rem);
+  --text-4xl: clamp(2rem, 4.2vw, 3.5rem);
+
+  --rule-hair: 1px;
+
+  /* Surfaces are square; controls are pills. That is the whole rule. */
+  --radius-none: 0;
+  --radius-pill: 999px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  --dur-press: 140ms;
+  --dur-hover: 220ms;
+  --dur-reveal: 700ms;
+}

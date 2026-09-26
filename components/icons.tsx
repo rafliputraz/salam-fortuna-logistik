@@ -48,6 +48,12 @@ export const Close = (p: IconProps) => (
   </Icon>
 )
 
+export const Check = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 12.5l5 5L20 6.5" />
+  </Icon>
+)
+
 export const Pin = (p: IconProps) => (
   <Icon {...p}>
     <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" />

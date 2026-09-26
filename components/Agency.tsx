@@ -4,13 +4,11 @@ import Image from 'next/image'
 import { useRef } from 'react'
 import { HUSBANDRY } from '@/lib/company'
 import { gsap, prefersReducedMotion, useGSAP } from '@/lib/motion'
-import { Anchor } from './icons'
 
 /**
- * The page's one dark section and its one photograph, duotoned into the
- * palette so it reads as art direction rather than stock. Ship agency earns
- * the emphasis: it is the half of the business a forwarding-only competitor
- * cannot offer, and dropping the ground here marks that.
+ * Ship agency: the half of the business a forwarding-only competitor cannot
+ * offer. The photograph opens out from a porthole-sized crop to the full
+ * width as you arrive, so the section lands like a ship coming alongside.
  */
 export default function Agency() {
   const scope = useRef<HTMLElement>(null)
@@ -18,93 +16,77 @@ export default function Agency() {
   useGSAP(
     () => {
       if (prefersReducedMotion()) return
-      gsap.to(gsap.utils.selector(scope)('[data-parallax]'), {
-        yPercent: -12,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: scope.current,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: true,
-        },
-      })
+      const q = gsap.utils.selector(scope)
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: q('[data-frame]')[0],
+            start: 'top 90%',
+            end: 'top 15%',
+            scrub: 0.6,
+          },
+        })
+        .fromTo(
+          q('[data-frame]'),
+          { clipPath: 'inset(16% 20% 16% 20%)' },
+          { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none' },
+          0
+        )
+        .fromTo(q('[data-photo]'), { scale: 1.3 }, { scale: 1, ease: 'none' }, 0)
     },
     { scope }
   )
 
   return (
-    <section
-      ref={scope}
-      id="agency"
-      className="on-dark relative overflow-hidden bg-oxblood"
-    >
-      <div className="chart-grid-dark absolute inset-0" aria-hidden="true" />
-
-      <div className="shell relative grid items-stretch lg:grid-cols-12">
-        <div className="relative isolate min-h-[22rem] overflow-hidden bg-brand-700 lg:col-span-5 lg:min-h-full">
+    <section ref={scope} id="agency" className="relative bg-abyss pb-24 pt-10 md:pb-36">
+      <div
+        data-frame
+        className="relative h-[78dvh] min-h-[28rem] w-full overflow-hidden bg-hold"
+      >
+        <div data-photo className="absolute inset-0 will-change-transform">
           <Image
-            data-parallax
             src="https://images.pexels.com/photos/12903633/pexels-photo-12903633.jpeg"
-            alt="A vessel working cargo alongside at berth"
+            alt="A container vessel working cargo alongside at berth"
             fill
-            sizes="(max-width: 1024px) 100vw, 42vw"
-            className="scale-110 object-cover opacity-70 grayscale mix-blend-luminosity"
+            sizes="100vw"
+            className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-oxblood via-transparent to-transparent" />
-          <p className="t-data absolute bottom-5 left-5 text-paper/70">
-            Alongside · {new Date().getFullYear()}
-          </p>
         </div>
-
-        <div className="py-24 lg:col-span-7 lg:py-32 lg:pl-16">
-          <p data-reveal className="eyebrow text-paper/70">
-            <span className="text-brand-300">02</span>
-            <span>Ship agency &amp; husbandry</span>
-          </p>
-
-          <h2
-            data-reveal
-            className="t-display mt-8 text-[clamp(2rem,4.6vw,3.5rem)] text-paper"
-          >
-            Alongside before
-            <br />
-            the pilot boards.
+        <div className="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/30 to-transparent" />
+        <div className="shell absolute inset-x-0 bottom-0 pb-12 md:pb-16">
+          <h2 className="t-display max-w-[14ch] text-[length:var(--text-display-s)] text-foam">
+            Alongside before the pilot <span className="text-signal">boards.</span>
           </h2>
+        </div>
+      </div>
 
-          <div
-            data-reveal
-            className="mt-8 max-w-2xl space-y-5 text-lg leading-relaxed text-paper/70"
-          >
-            <p>
-              A port call goes wrong in the gaps — the permit nobody filed, the crew
-              change nobody booked, the barge nobody confirmed. We work the gaps.
-            </p>
-            <p>
-              Our agents deal with KSOP, Bea Cukai, Karantina, and Imigrasi directly,
-              and the master gets one point of contact instead of four phone numbers.
-            </p>
-          </div>
-
-          <ul
-            data-reveal
-            className="mt-12 grid gap-px border border-paper/15 bg-paper/15 sm:grid-cols-2"
-          >
-            {HUSBANDRY.map((item) => (
-              <li key={item.title} className="bg-oxblood p-6">
-                <h3 className="t-data text-paper">{item.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-paper/60">{item.body}</p>
+      <div className="shell mt-16 grid gap-14 md:mt-24 lg:grid-cols-12 lg:gap-10">
+        <div className="space-y-5 text-lg leading-relaxed text-steel lg:col-span-5">
+          <p data-reveal>
+            A port call goes wrong in the gaps: the permit nobody filed, the crew
+            change nobody booked, the barge nobody confirmed. We work the gaps.
+          </p>
+          <p data-reveal>
+            Our agents deal with KSOP, Bea Cukai, Karantina and Imigrasi directly,
+            and the master gets one point of contact instead of four phone numbers.
+          </p>
+          <ul data-reveal className="flex flex-wrap gap-2 pt-3">
+            {["Owner's protective", "Charterer's", 'Full agency'].map((t) => (
+              <li key={t} className="rounded-full border border-rule-strong px-4 py-2 text-sm text-foam">
+                {t}
               </li>
             ))}
           </ul>
-
-          <p
-            data-reveal
-            className="t-data mt-10 flex items-center gap-3 text-paper/70"
-          >
-            <Anchor className="h-4 w-4 text-brand-300" />
-            Owner&apos;s protective, charterer&apos;s, or full agency
-          </p>
         </div>
+
+        <dl className="grid gap-x-10 sm:grid-cols-2 lg:col-span-6 lg:col-start-7">
+          {HUSBANDRY.map((item) => (
+            <div key={item.title} data-reveal className="border-t border-rule py-7">
+              <dt className="t-head text-[1.7rem] text-foam">{item.title}</dt>
+              <dd className="mt-3 leading-relaxed text-steel">{item.body}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   )

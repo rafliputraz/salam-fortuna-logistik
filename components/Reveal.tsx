@@ -25,7 +25,7 @@ export default function Reveal({ children }: { children: React.ReactNode }) {
         return
       }
 
-      gsap.set(targets, { opacity: 0, y: 18 })
+      gsap.set(targets, { opacity: 0, y: 24 })
 
       ScrollTrigger.batch(targets, {
         start: 'top 88%',
@@ -34,8 +34,8 @@ export default function Reveal({ children }: { children: React.ReactNode }) {
           gsap.to(batch, {
             opacity: 1,
             y: 0,
-            duration: 0.7,
-            ease: 'power2.out',
+            duration: 0.8,
+            ease: 'power3.out',
             stagger: 0.08,
             overwrite: true,
           }),

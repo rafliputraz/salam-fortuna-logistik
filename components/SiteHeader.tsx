@@ -1,90 +1,56 @@
 'use client'
 
 import Image from 'next/image'
-import { useRef, useState } from 'react'
-import { COMPANY, NAV } from '@/lib/company'
-import { gsap, useGSAP } from '@/lib/motion'
+import { useEffect, useRef, useState } from 'react'
+import { COMPANY, NAV, PRIMARY_CTA } from '@/lib/company'
+import { gsap, ScrollTrigger, useGSAP } from '@/lib/motion'
 import { ArrowRight, Close, Menu } from './icons'
 
-/** Gap the three pills settle to once the bar has converged. */
-const CLOSED_GAP = 6
-
+/**
+ * A floating pill that tucks away on the way down and returns on the way up,
+ * so it never sits over the ship while you are watching it. A red hairline
+ * along its foot tracks how far down the page you are.
+ */
 export default function SiteHeader() {
   const [open, setOpen] = useState(false)
   const header = useRef<HTMLElement>(null)
 
-  /**
-   * At the top of the page the three pills sit spread to the edges of the
-   * column; scrolling draws them together into a single centred capsule.
-   *
-   * The whole move is one animated property — the flex `gap`. Because the row
-   * is centre-justified, shrinking the gap pulls both outer pills inward on
-   * its own, so nothing has to be positioned by hand and the layout stays
-   * correct at any width.
-   */
   useGSAP(
     () => {
-      const q = gsap.utils.selector(header)
-      const shell = q('[data-nav-shell]')[0]
-      const pills = q('[data-nav-pill]')
-      if (!shell || pills.length < 2) return
+      const bar = header.current
+      const progress = bar?.querySelector<HTMLElement>('[data-progress]')
+      if (!bar) return
 
-      // Measured, not guessed: the open gap is whatever space is left over
-      // once the pills themselves are accounted for.
-      const openGap = () => {
-        const used = pills.reduce((sum, pill) => sum + pill.offsetWidth, 0)
-        const room = shell.parentElement!.clientWidth - used
-        return Math.max(CLOSED_GAP, room / (pills.length - 1))
-      }
-
-      const mm = gsap.matchMedia(header)
-
-      mm.add(
-        {
-          canConverge: '(min-width: 1024px) and (prefers-reduced-motion: no-preference)',
-          isStatic: '(max-width: 1023px), (prefers-reduced-motion: reduce)',
+      const show = gsap.quickTo(bar, 'yPercent', { duration: 0.45, ease: 'power3.out' })
+      ScrollTrigger.create({
+        start: 0,
+        end: 'max',
+        onUpdate: (self) => {
+          if (progress) progress.style.transform = `scaleX(${self.progress})`
+          if (open) return
+          show(self.direction === 1 && self.scroll() > 240 ? -160 : 0)
         },
-        (context) => {
-          if (!context.conditions!.canConverge) {
-            gsap.set(shell, { gap: CLOSED_GAP })
-            return
-          }
-
-          gsap.fromTo(
-            shell,
-            { gap: openGap },
-            {
-              gap: CLOSED_GAP,
-              ease: 'power2.out',
-              immediateRender: true,
-              scrollTrigger: {
-                start: 0,
-                end: 220,
-                scrub: 0.5,
-                invalidateOnRefresh: true,
-              },
-            }
-          )
-        }
-      )
+      })
     },
-    { scope: header }
+    { scope: header, dependencies: [open] }
   )
 
+  // Escape closes the sheet, and the page behind it stops scrolling.
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open])
+
   return (
-    <header ref={header} className="fixed inset-x-0 top-4 z-50">
+    <header ref={header} className="fixed inset-x-0 top-3 z-50 md:top-4">
       <div className="shell">
-        <div
-          data-nav-shell
-          className="flex items-center justify-center gap-1.5"
-        >
-          {/* z-10 so the logo tucks over the nav pill's rounded edge once the
-              two meet, rather than butting awkwardly against it. */}
+        <div className="glass relative flex items-center gap-4 overflow-hidden rounded-full py-2 pl-3 pr-2">
           <a
-            data-nav-pill
             href="#top"
-            className="navpill z-10 flex shrink-0 items-center gap-3 py-2.5 pl-3 pr-5"
-            aria-label={`${COMPANY.legalName} — home`}
+            className="flex shrink-0 items-center gap-3 rounded-full pr-2"
+            aria-label={`${COMPANY.legalName}, back to top`}
           >
             <Image
               src="/images/logo-sfl-nobg.png"
@@ -94,21 +60,12 @@ export default function SiteHeader() {
               priority
               className="h-8 w-auto"
             />
-            <span className="hidden leading-none sm:block">
-              <span className="t-display-sm block text-[0.9rem] text-ink">
-                {COMPANY.shortName}
-              </span>
-              <span className="t-data mt-1 block text-[0.6rem] text-ink-soft">
-                {COMPANY.basePort.code}
-              </span>
+            <span className="t-head hidden text-[1.05rem] tracking-wide text-foam sm:block">
+              {COMPANY.shortName}
             </span>
           </a>
 
-          <nav
-            data-nav-pill
-            aria-label="Primary"
-            className="navpill hidden shrink-0 items-center gap-8 px-8 py-4 lg:flex"
-          >
+          <nav aria-label="Primary" className="ml-auto hidden items-center gap-8 lg:flex">
             {NAV.map((item) => (
               <a key={item.href} href={item.href} className="navlink">
                 {item.label}
@@ -116,15 +73,9 @@ export default function SiteHeader() {
             ))}
           </nav>
 
-          <a
-            data-nav-pill
-            href="#contact"
-            className="btn-primary hidden shrink-0 !rounded-full py-2.5 pl-6 pr-2.5 lg:inline-flex"
-          >
-            Request a rate
-            <span className="btn-badge">
-              <ArrowRight className="h-3.5 w-3.5" />
-            </span>
+          <a href="#contact" className="btn-signal ml-6 hidden py-2.5 lg:inline-flex">
+            {PRIMARY_CTA}
+            <ArrowRight className="btn-arrow h-4 w-4" />
           </a>
 
           <button
@@ -132,38 +83,39 @@ export default function SiteHeader() {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="mobile-nav"
-            className="navpill ml-auto p-3.5 text-ink lg:hidden"
+            className="btn ml-auto h-11 w-11 !p-0 text-foam lg:hidden"
           >
             <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
             {open ? <Close className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
+
+          <span
+            data-progress
+            aria-hidden="true"
+            className="absolute inset-x-6 bottom-0 h-px origin-left bg-signal"
+            style={{ transform: 'scaleX(0)' }}
+          />
         </div>
 
         <div
           id="mobile-nav"
           hidden={!open}
-          className="mt-2 border border-line bg-surface-raised lg:hidden"
+          className="glass mt-2 origin-top animate-[sheet_220ms_var(--ease-out)] lg:hidden"
         >
-          <nav className="flex flex-col px-5 py-2" aria-label="Primary, mobile">
+          <nav className="flex flex-col px-5 py-3" aria-label="Primary, mobile">
             {NAV.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="t-display-sm border-b border-line py-4 text-lg text-ink"
+                className="t-head border-b border-rule py-4 text-2xl text-foam"
               >
                 {item.label}
               </a>
             ))}
-            <a
-              href="#contact"
-              onClick={() => setOpen(false)}
-              className="btn-primary mb-4 mt-5"
-            >
-              Request a rate
-              <span className="btn-badge">
-                <ArrowRight className="h-3.5 w-3.5" />
-              </span>
+            <a href="#contact" onClick={() => setOpen(false)} className="btn-signal mb-3 mt-5">
+              {PRIMARY_CTA}
+              <ArrowRight className="h-4 w-4" />
             </a>
           </nav>
         </div>

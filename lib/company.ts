@@ -12,6 +12,7 @@ export const COMPANY = {
     code: 'IDPNJ',
     name: 'Panjang Port',
     city: 'Bandar Lampung',
+    coords: '05°28′S 105°19′E',
   },
   address: {
     street: 'Ruko Little Europe Blok C No. 7',
@@ -20,12 +21,61 @@ export const COMPANY = {
     postcode: '35233',
     country: 'Indonesia',
   },
-  // TODO(client): verify — 0271 is the Surakarta area code; Bandar Lampung is 0721.
+  // TODO(client): verify. 0271 is the Surakarta area code; Bandar Lampung is 0721.
   phone: '(0271) 8127939286',
   // TODO(client): replace with the live mailbox before launch.
   email: 'contact@salamfortuna.com',
-  hours: 'Port cover 24/7 · Office Mon–Sat 08:00–17:00 WIB',
+  hours: {
+    port: 'Port cover, 24 hours',
+    office: 'Office Mon to Sat, 08:00 to 17:00 WIB',
+    // Used by the live office-status readout in the contact section.
+    openDays: [1, 2, 3, 4, 5, 6],
+    openHour: 8,
+    closeHour: 17,
+  },
 } as const
+
+/**
+ * The scroll story over the ship. One chapter per camera move; the copy is
+ * what the shot is showing.
+ */
+export const CHAPTERS = [
+  {
+    id: 'arrival',
+    label: 'Arrival',
+    title: 'We clear the port before your ship arrives.',
+    body:
+      'Freight forwarding and ship agency out of Panjang. Sea freight, customs, trucking and husbandry, one team on one file.',
+  },
+  {
+    id: 'sea',
+    label: 'Sea freight',
+    title: 'Booked direct with the lines.',
+    body:
+      'FCL, LCL, breakbulk and project cargo through Panjang and the main Indonesian gateways. A rate from the carrier, not a broker quoting a broker.',
+  },
+  {
+    id: 'file',
+    label: 'One file',
+    title: 'Every box, on one file.',
+    body:
+      'Empty release, stuffing, sailing, clearance, delivery. The same team carries your shipment the whole way, so nothing is lost between desks.',
+  },
+  {
+    id: 'agency',
+    label: 'Ship agency',
+    title: 'One call for the master.',
+    body:
+      'Port clearance, crew change, bunkers and stores, arranged by one agent who reports to the owner for the whole call.',
+  },
+  {
+    id: 'inland',
+    label: 'Delivery',
+    title: 'Cleared, and on the road.',
+    body:
+      'PEB and PIB filed, permits in hand, and trucks from the terminal to the door across Lampung and on through Bakauheni.',
+  },
+] as const
 
 /**
  * The five legs of a shipment, in the order they actually happen. The
@@ -36,21 +86,21 @@ export const VOYAGE = [
     code: 'BOOKING',
     title: 'Rate & booking',
     body:
-      'You send the cargo, lane, and window. We come back with a rate and a slot from the lines we book with directly — not a broker quoting a broker.',
+      'You send the cargo, lane, and window. We come back with a rate and a slot from the lines we book with directly.',
     detail: ['FCL & LCL rates', 'Slot confirmation', 'Schedule locking'],
   },
   {
     code: 'ORIGIN',
     title: 'Origin handling',
     body:
-      'Empty release, stuffing supervision, warehouse receipt, and seal records — with photographs, so the condition at stuffing is never in dispute.',
+      'Empty release, stuffing supervision, warehouse receipt and seal records, with photographs, so the condition at stuffing is never in dispute.',
     detail: ['Container release', 'Stuffing supervision', 'Seal & photo record'],
   },
   {
     code: 'SEA',
     title: 'Sea freight',
     body:
-      'Import, export, and domestic moves through Panjang and the other main Indonesian gateways, on alliances built over years rather than per shipment.',
+      'Import, export and domestic moves through Panjang and the other main Indonesian gateways, on alliances built over years rather than per shipment.',
     detail: ['Import & export', 'Domestic inter-island', 'Special equipment'],
   },
   {
@@ -64,7 +114,7 @@ export const VOYAGE = [
     code: 'INLAND',
     title: 'Inland delivery',
     body:
-      'Trucking from the terminal to the door across Lampung and onward through Bakauheni, through a trucker network we hold accountable ourselves.',
+      'Trucking from the terminal to the door across Lampung and onward through Bakauheni, on a trucker network we hold accountable ourselves.',
     detail: ['Terminal to door', 'Cross-Sumatra haulage', 'Delivery proof'],
   },
 ] as const
@@ -73,7 +123,7 @@ export const VOYAGE = [
 export const HUSBANDRY = [
   {
     title: 'Port clearance',
-    body: 'KSOP, Bea Cukai, Karantina, and Imigrasi handled before the pilot boards.',
+    body: 'KSOP, Bea Cukai, Karantina and Imigrasi handled before the pilot boards.',
   },
   {
     title: 'Crew & cash',
@@ -81,7 +131,7 @@ export const HUSBANDRY = [
   },
   {
     title: 'Supply & bunkers',
-    body: 'Provisions, fresh water, bunkers, and spare parts alongside the berth.',
+    body: 'Provisions, fresh water, bunkers and spare parts alongside the berth.',
   },
   {
     title: "Owner's protective",
@@ -103,7 +153,7 @@ export const PRINCIPLES = [
   {
     title: 'We solve, then invoice',
     body:
-      'Detention, a rolled booking, a document held at the counter — we move first and settle the cost after.',
+      'Detention, a rolled booking, a document held at the counter. We move first and settle the cost after.',
   },
   {
     title: 'We show our work',
@@ -118,7 +168,7 @@ export const VISION =
 
 /**
  * Gateways we move cargo through, for the scrolling band.
- * TODO(client): trim to the ports you genuinely cover — this is a claim.
+ * TODO(client): trim to the ports you genuinely cover. This is a claim.
  */
 export const PORTS = [
   { name: 'Panjang', code: 'IDPNJ' },
@@ -132,22 +182,7 @@ export const PORTS = [
   { name: 'Bakauheni', code: 'IDBKH' },
 ] as const
 
-/**
- * The company's own particulars, set out the way a container's CSC plate sets
- * out a box's. Fixed facts about the business — nothing here is live data, so
- * nothing here needs a feed behind it.
- */
-export const PARTICULARS = [
-  { label: 'Operator', value: 'PT Salam Fortuna Logistik' },
-  { label: 'Base port', value: 'IDPNJ — Panjang, Bandar Lampung' },
-  { label: 'Disciplines', value: 'Freight forwarding · Ship agency' },
-  { label: 'Sea freight', value: 'FCL · LCL · Breakbulk · Project' },
-  { label: 'Clearance', value: 'PEB · PIB · COO · Permits' },
-  { label: 'Agency', value: "Owner's protective · Charterer's · Full" },
-  { label: 'Attendance', value: 'Port cover, 24 hours' },
-] as const
-
-/** The closing band. Deliberately short — it is a door, not a pitch. */
+/** The closing band. Deliberately short: it is a door, not a pitch. */
 export const CTA = {
   headline: 'Something to move? Start with a phone call.',
   body:
@@ -155,7 +190,7 @@ export const CTA = {
 } as const
 
 /**
- * Questions we actually get asked. Kept factual and free of figures — nothing
+ * Questions we actually get asked. Kept factual and free of figures: nothing
  * here commits the company to a number it would have to defend.
  */
 export const FAQ = [
@@ -168,16 +203,16 @@ export const FAQ = [
     a: 'If your cargo fills most of a container, FCL is usually cheaper per unit and handles less. Below that, LCL means you only pay for the space you use, at the cost of consolidation time at both ends. Tell us the volume and we will price both.',
   },
   {
-    q: 'Who handles customs — you or my broker?',
+    q: 'Who handles customs, you or my broker?',
     a: 'We do, unless you would rather keep your own broker. Our team files the PEB for exports and the PIB for imports, and arranges certificates of origin and any commodity permits. You approve the declaration before it is submitted.',
   },
   {
     q: 'Is my cargo insured?',
-    a: 'Not automatically. Carrier liability is limited by the bill of lading and rarely covers the value of the goods. We can arrange marine cargo insurance on request — tell us the invoice value and we will quote it alongside the freight.',
+    a: 'Not automatically. Carrier liability is limited by the bill of lading and rarely covers the value of the goods. We can arrange marine cargo insurance on request. Tell us the invoice value and we will quote it alongside the freight.',
   },
   {
     q: 'What happens if the container is held at the port?',
-    a: 'We tell you the same day, with the reason and what it will take to release it. Demurrage and detention are billed at cost with the carrier invoice attached — we do not mark them up, and we do not wait for your approval before acting to stop the clock.',
+    a: 'We tell you the same day, with the reason and what it will take to release it. Demurrage and detention are billed at cost with the carrier invoice attached. We do not mark them up, and we do not wait for your approval before acting to stop the clock.',
   },
   {
     q: 'Do you work ports outside Lampung?',
@@ -191,3 +226,8 @@ export const NAV = [
   { href: '#standards', label: 'How we work' },
   { href: '#contact', label: 'Contact' },
 ] as const
+
+/** One label per intent, used everywhere a rate is asked for. */
+export const PRIMARY_CTA = 'Request a rate'
+
+export const telHref = `tel:${COMPANY.phone.replace(/[^\d+]/g, '')}`

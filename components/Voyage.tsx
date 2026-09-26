@@ -6,177 +6,153 @@ import { VOYAGE } from '@/lib/company'
 import { gsap, useGSAP } from '@/lib/motion'
 import { LEG_ICONS } from './icons'
 
-/** Where the topmost card comes to rest, clear of the floating masthead. */
-const STACK_TOP = 7
-/** How much of each earlier card stays visible under the one above it, in px. */
-const STACK_STEP = 16
-
 /**
- * The five legs of a shipment, in order.
+ * The five legs of a shipment, laid end to end as a route.
  *
- * The left column holds still while the legs are worked through: each card
- * sticks in turn and the next one rides up over it, leaving a thin edge of
- * every completed leg showing. The stack you end up looking at is the file so
- * far — which is the point of the section.
- *
- * The stacking itself is plain CSS `position: sticky`, so it survives with
- * scripts off. GSAP only drives the progress rail.
+ * On a desktop the section pins and the legs pass sideways, the way a box
+ * moves through its legs, while a red container rides the route line at the
+ * foot of the screen and lights each stop as it reaches it. On a phone, or
+ * with reduced motion, it is simply a list read top to bottom.
  */
 export default function Voyage() {
   const scope = useRef<HTMLElement>(null)
 
   useGSAP(
     () => {
-      const q = gsap.utils.selector(scope)
-      const stack = q('[data-stack]')[0]
-      const nodes = q('[data-node]')
-      if (!stack) return
+      const section = scope.current
+      if (!section) return
+      const q = gsap.utils.selector(section)
+      const track = q('[data-track]')[0]
+      const box = q('[data-box]')[0]
+      const stops = q('[data-stop]')
+      const mm = gsap.matchMedia(section)
 
-      const restOffset = STACK_TOP * 16
-      const lastCard = stack.lastElementChild as HTMLElement | null
+      mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+        section.classList.add('is-pan')
+        const distance = () => track.scrollWidth - window.innerWidth
 
-      // Driven off the stack's own scroll range rather than off each card: a
-      // sticky element's box stops moving once it is stuck, so per-card
-      // triggers resolve their start against an element already parked and
-      // fire far too early. The range runs from the moment the first card
-      // comes to rest to the moment the last one does, which is exactly the
-      // span over which the deck is being built.
-      gsap.to(q('[data-rail-fill]'), {
-        scaleX: 1,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: stack,
-          start: () => `top ${restOffset}px`,
-          end: () => `bottom ${(lastCard?.offsetHeight ?? 0) + restOffset}px`,
-          scrub: 0.5,
-          invalidateOnRefresh: true,
-          onUpdate: (self) =>
-            nodes.forEach((node, i) =>
-              node.classList.toggle(
-                'is-lit',
-                self.progress >= i / Math.max(1, nodes.length - 1)
-              )
-            ),
-        },
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: 'top top',
+            end: () => `+=${distance()}`,
+            pin: true,
+            scrub: 0.6,
+            invalidateOnRefresh: true,
+            onUpdate: (self) =>
+              stops.forEach((s, i) =>
+                s.classList.toggle('is-lit', self.progress >= (i + 0.35) / (stops.length + 0.35))
+              ),
+          },
+        })
+        tl.to(track, { x: () => -distance(), ease: 'none' }, 0)
+        tl.fromTo(
+          box,
+          { x: 0 },
+          { x: () => (box.parentElement?.clientWidth ?? 0) - box.offsetWidth, ease: 'none' },
+          0
+        )
+
+        return () => {
+          section.classList.remove('is-pan')
+          stops.forEach((s) => s.classList.remove('is-lit'))
+        }
       })
     },
     { scope }
   )
 
   return (
-    <section ref={scope} id="voyage" className="py-24 md:py-32">
-      <div className="shell grid gap-12 lg:grid-cols-12 lg:gap-14">
-        <div className="lg:col-span-5">
-          <div className="lg:sticky lg:top-28">
-            <p data-reveal className="eyebrow">
-              <span className="text-brand-600">01</span>
-              <span>Legs of a shipment</span>
-            </p>
-
-            <h2
-              data-reveal
-              className="t-display mt-7 text-[clamp(2rem,4vw,3rem)] text-ink"
-            >
-              One file, from your gate to theirs.
-            </h2>
-
-            <p data-reveal className="mt-6 max-w-md leading-relaxed text-ink-soft">
-              Most forwarders hand you off three times between booking and delivery,
-              and the file loses something at each handover. The same team carries
-              this one the whole way.
-            </p>
-
-            {/* Compact enough that the whole sticky column still fits a laptop
-                viewport — a rail taller than the screen would never be seen. */}
-            <div data-reveal className="mt-9" aria-hidden="true">
-              <div className="relative">
-                <span className="absolute left-0 right-0 top-[13.5px] h-px bg-line" />
-                <span
-                  data-rail-fill
-                  className="absolute left-0 right-0 top-[13.5px] h-px origin-left scale-x-0 bg-brand"
-                />
-                <ol className="relative flex justify-between">
-                  {VOYAGE.map((leg, i) => (
-                    <li key={leg.code} className="flex flex-col items-center gap-3">
-                      <span data-node className="node" />
-                      <span className="t-data text-ink-soft">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            </div>
-
-            <div
-              data-reveal
-              className="relative mt-9 hidden aspect-[16/10] overflow-hidden border border-line lg:block"
-            >
-              <Image
-                src="https://images.pexels.com/photos/2091159/pexels-photo-2091159.jpeg"
-                alt="Containers stacked at the terminal"
-                fill
-                sizes="34vw"
-                className="object-cover"
-              />
-            </div>
+    <section ref={scope} id="voyage" className="group relative overflow-hidden bg-abyss">
+      <div
+        data-track
+        className="flex flex-col group-[.is-pan]:h-[100dvh] group-[.is-pan]:w-max group-[.is-pan]:flex-row"
+      >
+        <header className="shell flex flex-col justify-center py-24 group-[.is-pan]:w-[46rem] group-[.is-pan]:max-w-none group-[.is-pan]:shrink-0 group-[.is-pan]:py-0 group-[.is-pan]:pr-16">
+          <h2 data-reveal className="t-display text-[length:var(--text-display-s)] text-foam">
+            One file, from your gate to theirs.
+          </h2>
+          <p data-reveal className="mt-6 max-w-[34rem] text-lg leading-relaxed text-steel">
+            Most forwarders hand you off three times between booking and delivery,
+            and the file loses something at each handover. The same team carries
+            this one the whole way.
+          </p>
+          <div
+            data-reveal
+            className="relative mt-10 aspect-[16/9] w-full max-w-[36rem] overflow-hidden bg-hold"
+          >
+            <Image
+              src="https://images.pexels.com/photos/2091159/pexels-photo-2091159.jpeg"
+              alt="Containers stacked at a terminal"
+              fill
+              sizes="(max-width: 1024px) 100vw, 36rem"
+              className="object-cover"
+            />
           </div>
-        </div>
+        </header>
 
-        <ol data-stack className="lg:col-span-7">
+        <ol className="flex flex-col group-[.is-pan]:flex-row">
           {VOYAGE.map((leg, i) => {
-            const LegIcon = LEG_ICONS[leg.code]
-            const isLast = i === VOYAGE.length - 1
+            const Icon = LEG_ICONS[leg.code]
             return (
               <li
                 key={leg.code}
-                className="lg:sticky"
-                style={{
-                  top: `calc(${STACK_TOP}rem + ${i * STACK_STEP}px)`,
-                  zIndex: i + 1,
-                  // Each card but the last needs runway for the next to travel
-                  // over it; the last one has nothing following it.
-                  marginBottom: isLast ? 0 : '1.5rem',
-                }}
+                className="border-t border-rule group-[.is-pan]:flex group-[.is-pan]:w-[31rem] group-[.is-pan]:shrink-0 group-[.is-pan]:items-center group-[.is-pan]:border-l group-[.is-pan]:border-t-0"
               >
-                {/* The upward shadow is what makes the deck legible — without
-                    it, white cards on white read as one flat surface. */}
-                <article className="leg group overflow-hidden bg-surface-raised shadow-[0_-10px_26px_-18px_rgba(7,32,39,0.45)] lg:min-h-[17rem]">
-                  <LegIcon className="pointer-events-none absolute -right-4 -top-4 h-32 w-32 text-ink opacity-[0.05] transition-opacity duration-500 group-hover:opacity-[0.1]" />
-
-                  <div className="relative">
-                    <p className="t-data flex items-center gap-3 text-ink-soft">
-                      <span className="text-brand-600">
-                        Leg {String(i + 1).padStart(2, '0')}
-                      </span>
-                      <span className="h-px w-6 bg-line-strong" />
-                      {leg.code}
-                    </p>
-
-                    <h3 className="t-display-sm mt-4 text-2xl text-ink md:text-[1.7rem]">
-                      {leg.title}
-                    </h3>
-
-                    <p className="mt-4 max-w-xl leading-relaxed text-ink-soft">
-                      {leg.body}
-                    </p>
-
-                    <ul className="mt-6 flex flex-wrap gap-2">
-                      {leg.detail.map((d) => (
-                        <li
-                          key={d}
-                          className="t-data border border-line px-3 py-2 text-ink-soft"
-                        >
-                          {d}
-                        </li>
-                      ))}
-                    </ul>
+                <article className="shell py-14 group-[.is-pan]:px-12 group-[.is-pan]:py-0">
+                  <div className="flex items-start justify-between gap-6">
+                    <span
+                      aria-hidden="true"
+                      className="t-display t-stencil text-[clamp(5rem,9vw,8.5rem)] leading-none"
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <Icon className="mt-3 h-10 w-10 shrink-0 text-signal-lift" />
                   </div>
+                  <h3 className="t-head mt-8 text-[clamp(2rem,3vw,2.75rem)] text-foam">
+                    {leg.title}
+                  </h3>
+                  <p className="mt-4 max-w-[26rem] leading-relaxed text-steel">{leg.body}</p>
+                  <ul className="mt-7 space-y-2 border-l border-signal/60 pl-4">
+                    {leg.detail.map((d) => (
+                      <li key={d} className="t-label text-fog">
+                        {d}
+                      </li>
+                    ))}
+                  </ul>
                 </article>
               </li>
             )
           })}
+          <li aria-hidden="true" className="hidden group-[.is-pan]:block group-[.is-pan]:w-[12vw] group-[.is-pan]:shrink-0" />
         </ol>
+      </div>
+
+      {/* The route. Only drawn when the legs are travelling sideways. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-10 hidden group-[.is-pan]:block"
+      >
+        <div className="shell">
+          <div className="relative h-4">
+            <span className="absolute inset-x-0 top-1/2 h-px bg-rule-strong" />
+            <span
+              data-box
+              className="absolute top-0 h-4 w-10 bg-signal shadow-[0_0_24px_oklch(var(--c-signal)/0.6)]"
+            />
+          </div>
+          <ol className="mt-4 flex justify-between">
+            {VOYAGE.map((leg) => (
+              <li
+                key={leg.code}
+                data-stop
+                className="t-label text-fog transition-colors duration-300 [&.is-lit]:text-foam"
+              >
+                {leg.title}
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
     </section>
   )

@@ -3,18 +3,18 @@ import Agency from '@/components/Agency'
 import Contact from '@/components/Contact'
 import CtaBand from '@/components/CtaBand'
 import Faq from '@/components/Faq'
-import Hero from '@/components/Hero'
 import PortBand from '@/components/PortBand'
 import Reveal from '@/components/Reveal'
+import ShipStory from '@/components/ShipStory'
 import SiteFooter from '@/components/SiteFooter'
 import SiteHeader from '@/components/SiteHeader'
 import Standards from '@/components/Standards'
 import Voyage from '@/components/Voyage'
 import { COMPANY } from '@/lib/company'
 
-const TITLE = `${COMPANY.legalName} — Freight forwarding & ship agency, ${COMPANY.basePort.city}`
+const TITLE = `${COMPANY.legalName} | Freight forwarding & ship agency, ${COMPANY.basePort.city}`
 const DESCRIPTION =
-  'Freight forwarding and ship agency out of Panjang Port, Bandar Lampung. Sea freight, customs clearance, inland trucking, and full husbandry — handled by one team.'
+  'Freight forwarding and ship agency out of Panjang Port, Bandar Lampung. Sea freight, customs clearance, inland trucking, and full husbandry, handled by one team.'
 
 export default function Home() {
   return (
@@ -22,8 +22,8 @@ export default function Home() {
       <Head>
         <title>{TITLE}</title>
         <meta name="description" content={DESCRIPTION} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#f4f7f7" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta name="theme-color" content="#08121a" />
         <meta property="og:title" content={TITLE} />
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:type" content="website" />
@@ -33,27 +33,29 @@ export default function Home() {
 
       <a
         href="#main"
-        className="btn-primary sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60]"
+        className="btn-signal sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80]"
       >
         Skip to content
       </a>
 
-      <SiteHeader />
+      <div className="grain">
+        <SiteHeader />
 
-      <Reveal>
-        <main id="main" tabIndex={-1}>
-          <Hero />
-          <PortBand />
-          <Voyage />
-          <Agency />
-          <Standards />
-          <Faq />
-          <Contact />
-          <CtaBand />
-        </main>
-      </Reveal>
+        <Reveal>
+          <main id="main" tabIndex={-1}>
+            <ShipStory />
+            <PortBand />
+            <Voyage />
+            <Agency />
+            <Standards />
+            <Faq />
+            <Contact />
+            <CtaBand />
+          </main>
+        </Reveal>
 
-      <SiteFooter />
+        <SiteFooter />
+      </div>
     </>
   )
 }
