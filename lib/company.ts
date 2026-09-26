@@ -42,7 +42,6 @@ export const COMPANY = {
 export const CHAPTERS = [
   {
     id: 'arrival',
-    side: 'left',
     label: 'Arrival',
     title: 'We clear the port before your ship arrives.',
     body:
@@ -50,7 +49,6 @@ export const CHAPTERS = [
   },
   {
     id: 'sea',
-    side: 'left',
     label: 'Sea freight',
     title: 'Booked direct with the lines.',
     body:
@@ -58,7 +56,6 @@ export const CHAPTERS = [
   },
   {
     id: 'file',
-    side: 'left',
     label: 'One file',
     title: 'Every box, on one file.',
     body:
@@ -66,7 +63,6 @@ export const CHAPTERS = [
   },
   {
     id: 'agency',
-    side: 'right',
     label: 'Ship agency',
     title: 'One call for the master.',
     body:
@@ -74,11 +70,10 @@ export const CHAPTERS = [
   },
   {
     id: 'inland',
-    side: 'left',
     label: 'Delivery',
-    title: 'Cleared, and on its way inland.',
+    title: 'Cleared, and on the road.',
     body:
-      'PEB and PIB filed, permits in hand, and your cargo moving from the terminal to the door across Lampung and on through Bakauheni.',
+      'PEB and PIB filed, permits in hand, and trucks from the terminal to the door across Lampung and on through Bakauheni.',
   },
 ] as const
 

@@ -36,24 +36,19 @@ Surfaces are square. Controls (buttons, chips, nav) are pills. Nothing in betwee
 - Every scroll effect has a reduced-motion path: no pins, still frame, plain text.
 
 ## The hero scene
-The hero is a single photograph of a container terminal, rebuilt in depth
-(`lib/terminal/scene.ts`):
+A to-scale container ship at dusk (`lib/ship/model.ts`: a hull lofted from
+cross-sections, ~2,600 instanced 40ft boxes, accommodation, funnel, nav
+lights) making way on a reflective sea (`lib/ship/water.ts`, a port of
+three.js's `Water` (MIT) that mirrors the real scene and ripples it with a
+normal map of real water, `public/images/ship/waternormals.jpg`). Sky and
+wake shaders are in `lib/ship/sea.ts`.
 
-- `public/images/terminal/photo.webp`: the photo (2000x1334).
-- `depth.png`: a depth map estimated offline with Depth Anything V2, dilated
-  a few pixels so object edges keep their own depth. It lifts a 520x347 mesh
-  into relief in the vertex shader.
-- `mask.png`: the same depth, undilated; per pixel it decides what is sky.
-- `sky.webp`: the sky with the cranes painted out (OpenCV inpainting), set
-  far behind the relief and drifting slowly.
+Scrolling turns the camera once round the ship (`lib/ship/scene.ts`,
+`orbit()`): off the port bow, broadside, rising over the stern, round the far
+side and back toward the bow as it pulls away. The orbit widens when she is
+broadside so all 330 m stay in frame, and the ship is framed right of the
+text on desktop, high in the frame on phones. three.js is dynamically
+imported; the CSS poster gradient carries the hero until it lands.
 
-Seen from the origin with the photo's field of view the scene is exactly the
-photograph. Shots magnify with lens zoom and move the camera only 10-20 m,
-because the relief holds up to modest moves only; the view is clamped so it
-never runs past the photo's edges. Portrait screens use gentler zoom.
-The chapter text moves to the right when a shot's subject is on the left,
-and the scrim follows it. three.js is dynamically imported; the CSS poster
-gradient carries the hero until the images land.
-
-An earlier version used a cut-out ship photo on a reflective sea; it is in
-git history at commit 12342dd if it is ever wanted back.
+Earlier hero experiments are in git history: a cut-out ship photo on the
+sea (12342dd) and a terminal photo rebuilt in depth (edd4787).

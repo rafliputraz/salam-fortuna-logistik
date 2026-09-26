@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { CHAPTERS, PRIMARY_CTA, telHref } from '@/lib/company'
 import { gsap, prefersReducedMotion, ScrollTrigger, SplitText, useGSAP } from '@/lib/motion'
-import type { TerminalScene } from '@/lib/terminal/scene'
+import type { ShipScene } from '@/lib/ship/scene'
 import { ArrowRight, Phone } from './icons'
 
 /** Screens of scroll the camera flight takes, after the hero screen itself. */
@@ -18,21 +18,20 @@ type Mode = 'motion' | 'static'
 /**
  * The hero and the story in one pinned stage.
  *
- * A real container terminal, rebuilt in depth from a single photograph,
- * holds the screen while the page scrolls. The scroll drives a camera
- * through five moves (the whole terminal, the cranes at the berth, down
- * into the stack yard, the ship's bridge, and the rail line heading
- * inland), and each move carries one line of what we do. Every chapter is
- * framed on the part of the terminal it is about.
+ * A container ship, modelled to scale in WebGL and making way on a
+ * reflective sea, holds the screen while the page scrolls. The scroll turns
+ * the camera once around her (off the bow, broadside, up over the stern,
+ * round the far side) and each part of the turn carries one line of what
+ * we do.
  *
- * Reduced motion drops the pin and the flight. The terminal is rendered once as
+ * Reduced motion drops the pin and the flight. The ship is rendered once as
  * a still behind the hero and the chapters are set as ordinary text below.
  */
 export default function ShipStory() {
   const scope = useRef<HTMLElement>(null)
   const stage = useRef<HTMLDivElement>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
-  const sceneRef = useRef<TerminalScene | null>(null)
+  const sceneRef = useRef<ShipScene | null>(null)
   const [mode, setMode] = useState<Mode>('motion')
   const [ready, setReady] = useState(false)
   const [glFailed, setGlFailed] = useState(false)
@@ -47,10 +46,10 @@ export default function ShipStory() {
     let cancelled = false
     let io: IntersectionObserver | undefined
 
-    import('@/lib/terminal/scene')
-      .then(({ createTerminalScene }) => {
+    import('@/lib/ship/scene')
+      .then(({ createShipScene }) => {
         if (cancelled || !canvas.current) return
-        const scene = createTerminalScene(canvas.current, () => !cancelled && setReady(true))
+        const scene = createShipScene(canvas.current, () => !cancelled && setReady(true))
         sceneRef.current = scene
         const still = prefersReducedMotion()
 
@@ -91,12 +90,9 @@ export default function ShipStory() {
       const chapters = q('[data-chapter]')
       const ticks = q('[data-tick]')
       const fill = q('[data-hud-fill]')[0]
-      const scrimLeft = q('[data-scrim-left]')[0]
-      const scrimRight = q('[data-scrim-right]')[0]
       const n = chapters.length - 1
 
       const paint = (p: number) => {
-        let right = 0
         chapters.forEach((el, i) => {
           const d = p - i / n
           const ad = Math.abs(d)
@@ -108,13 +104,7 @@ export default function ShipStory() {
           el.style.transform = `translate3d(0, ${(-d * 260).toFixed(1)}px, 0)`
           el.style.visibility = o < 0.01 ? 'hidden' : 'visible'
           el.setAttribute('aria-hidden', o < 0.5 ? 'true' : 'false')
-          if (el.dataset.side === 'right') right = Math.max(right, o)
         })
-        // On wide screens the scrim follows the text to whichever side it is
-        // on; on phones the text always sits low, so the bottom scrim stays.
-        if (!window.matchMedia('(min-width: 768px)').matches) right = 0
-        if (scrimLeft) scrimLeft.style.opacity = String(1 - right)
-        if (scrimRight) scrimRight.style.opacity = String(right)
         const active = Math.round(p * n)
         ticks.forEach((t, i) => t.classList.toggle('is-active', i === active))
         if (fill) fill.style.transform = `scaleY(${p})`
@@ -184,15 +174,8 @@ export default function ShipStory() {
 
         {/* Scrims keep the type legible over any frame of the flight. */}
         <div
-          data-scrim-left
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-abyss via-abyss/70 to-transparent md:bg-gradient-to-r md:from-abyss/85 md:via-abyss/25 md:to-transparent"
-        />
-        <div
-          data-scrim-right
-          aria-hidden="true"
-          style={{ opacity: 0 }}
-          className="pointer-events-none absolute inset-0 hidden bg-gradient-to-l from-abyss/95 via-abyss/60 to-transparent md:block"
         />
         <div
           aria-hidden="true"
@@ -204,7 +187,6 @@ export default function ShipStory() {
           <div className="relative grid w-full">
             <div
               data-chapter
-              data-side={hero.side}
               className="max-w-[44rem] self-end will-change-transform [grid-area:1/1] md:self-center"
             >
               <h1
@@ -236,11 +218,8 @@ export default function ShipStory() {
                 <article
                   key={c.id}
                   data-chapter
-                  data-side={c.side}
                   style={{ opacity: 0, visibility: 'hidden' }}
-                  className={`max-w-[44rem] self-end will-change-transform [grid-area:1/1] md:self-center ${
-                    c.side === 'right' ? 'md:justify-self-end lg:mr-44' : ''
-                  }`}
+                  className="max-w-[44rem] self-end will-change-transform [grid-area:1/1] md:self-center"
                 >
                   <h2 className="t-display text-[length:var(--text-display-s)] text-foam">
                     {c.title}
