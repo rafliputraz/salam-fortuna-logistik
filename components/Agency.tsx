@@ -4,17 +4,12 @@ import Image from 'next/image'
 import { useRef } from 'react'
 import { HUSBANDRY } from '@/lib/company'
 import { gsap, prefersReducedMotion, useGSAP } from '@/lib/motion'
-
-/** A swell line, drawn once and tiled. */
-const wave = (w: number, h: number, amp: number, stroke: number, opacity: number) =>
-  `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'%3E%3Cpath d='M0 ${h / 2} Q${w / 8} ${h / 2 - amp} ${w / 4} ${h / 2} T${w / 2} ${h / 2} T${(w * 3) / 4} ${h / 2} T${w} ${h / 2}' fill='none' stroke='white' stroke-opacity='${opacity}' stroke-width='${stroke}'/%3E%3C/svg%3E")`
+import { Check } from './icons'
 
 /**
- * Ship agency, on the page's one full colour block.
- *
- * The real ship comes in bow first from the left and crosses to the right as
- * you scroll past, riding a few layers of drifting swell. The four things we
- * handle for the master tick off beneath her.
+ * Ship agency, on the one deep navy band. The photograph opens from a
+ * narrow frame to full as it scrolls into view and keeps drifting inside
+ * it; the four things we handle for the master sit beside it.
  */
 export default function Agency() {
   const scope = useRef<HTMLElement>(null)
@@ -22,111 +17,64 @@ export default function Agency() {
   useGSAP(
     () => {
       if (prefersReducedMotion()) return
-      const section = scope.current
-      if (!section) return
-      const q = gsap.utils.selector(section)
-      // She crosses left to right while the sea is on screen.
+      const q = gsap.utils.selector(scope)
       gsap.fromTo(
-        q('[data-ship]'),
-        { xPercent: -95 },
-        {
-          xPercent: 70,
-          ease: 'none',
-          scrollTrigger: { trigger: q('[data-sea]')[0], start: 'top bottom', end: 'bottom top', scrub: 0.8 },
-        }
+        q('[data-frame]'),
+        { clipPath: 'inset(8% 14% 8% 14% round 2rem)' },
+        { clipPath: 'inset(0% 0% 0% 0% round 2rem)', ease: 'none', scrollTrigger: { trigger: q('[data-frame]')[0], start: 'top 90%', end: 'top 30%', scrub: true } }
       )
-
-      // Each thing we handle ticks off as it comes into view.
-      q('[data-tick] path').forEach((path) => {
-        gsap.from(path, {
-          drawSVG: 0,
-          duration: 0.6,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: path, start: 'top 85%' },
-        })
-      })
+      gsap.fromTo(
+        q('[data-photo]'),
+        { scale: 1.2, yPercent: -6 },
+        { scale: 1.05, yPercent: 6, ease: 'none', scrollTrigger: { trigger: q('[data-frame]')[0], start: 'top bottom', end: 'bottom top', scrub: true } }
+      )
     },
     { scope }
   )
 
   return (
-    <section ref={scope} id="agency" className="relative overflow-hidden bg-box-cobalt text-paper">
-      <div className="flex h-full flex-col">
-        <div className="shell relative z-20 pt-24 md:pt-28">
-          <div>
-            <h2 data-split className="t-display max-w-[13ch] text-[length:var(--text-display-s)]">
+    <section ref={scope} id="agency" className="bg-deep py-24 text-white md:py-32">
+      <div className="shell">
+        <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-7">
+            <p className="eyebrow !text-sky">Ship agency</p>
+            <h2 data-split className="t-h2 mt-4">
               Alongside before the pilot boards.
             </h2>
-            <p data-reveal className="mt-5 max-w-xl text-lg leading-relaxed text-paper/85">
-              A port call goes wrong in the gaps: the permit nobody filed, the crew
-              change nobody booked. Our agents deal with KSOP, Bea Cukai, Karantina and
-              Imigrasi directly, and the master gets one point of contact.
-            </p>
           </div>
+          <p data-reveal className="text-white/70 lg:col-span-5">
+            A port call goes wrong in the gaps: the permit nobody filed, the crew change nobody
+            booked. Our agents deal with KSOP, Bea Cukai, Karantina and Imigrasi directly, and
+            the master gets one point of contact.
+          </p>
         </div>
 
-        {/* The sea, and her in it. */}
-        <div data-sea aria-hidden="true" className="relative mt-6 h-[15rem] sm:h-[20rem] lg:h-[26rem]">
-          <div
-            className="swell absolute inset-x-0 bottom-0 h-[46%] [--swell-dist:-640px] [--swell-speed:26s]"
-            style={{ backgroundImage: wave(320, 44, 9, 2, 0.14), backgroundSize: '320px 44px' }}
+        <div data-frame className="relative mt-14 aspect-[16/10] overflow-hidden rounded-[2rem] md:aspect-[21/9]">
+          <Image
+            data-photo
+            src="/images/photos/ship-at-sea.webp"
+            alt="Container ship underway, fully laden"
+            fill
+            sizes="(max-width: 1400px) 100vw, 84rem"
+            className="object-cover object-[50%_45%]"
           />
+          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-deep/70 via-transparent to-transparent" />
+          <p className="absolute bottom-6 left-6 rounded-full bg-white/15 px-4 py-2 text-sm font-medium backdrop-blur-md md:bottom-8 md:left-8">
+            Owner&apos;s, charterer&apos;s and full agency
+          </p>
+        </div>
 
-          <div data-ship className="absolute bottom-[20%] left-[20%] w-[min(82vw,46rem)] will-change-transform">
-            <div className="ship-bob relative">
-              {/* Wake churning astern, and the bow wave ahead. */}
-              <span className="wake absolute bottom-[1%] right-[88%] h-[11%] w-[75%]" />
-              <span className="bow-wave absolute bottom-[1%] left-[88%] h-[9%] w-[14%]" />
-              <Image
-                src="/images/ship/ship.webp"
-                alt=""
-                width={1750}
-                height={860}
-                sizes="(max-width: 768px) 82vw, 46rem"
-                className="relative h-auto w-full drop-shadow-[0_24px_24px_oklch(var(--c-ink)/0.35)]"
-              />
+        <dl className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {HUSBANDRY.map((h) => (
+            <div key={h.title} data-reveal className="rounded-3xl bg-deep-2 p-7 ring-1 ring-inset ring-white/10 transition-colors duration-300 hover:bg-white/10">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-sky/15 text-sky">
+                <Check className="h-5 w-5" />
+              </span>
+              <dt className="t-h3 mt-6 text-xl">{h.title}</dt>
+              <dd className="mt-2 text-[0.95rem] leading-relaxed text-white/70">{h.body}</dd>
             </div>
-          </div>
-
-          {/* The nearest swell washes over her waterline. */}
-          <div
-            className="swell absolute inset-x-0 bottom-0 z-10 h-[24%] [--swell-dist:-660px] [--swell-speed:14s]"
-            style={{
-              backgroundImage: `${wave(220, 30, 6, 2.5, 0.28)}, linear-gradient(to bottom, oklch(var(--c-box-cobalt) / 0.55), oklch(var(--c-box-cobalt)))`,
-              backgroundSize: '220px 30px, 100% 100%',
-            }}
-          />
-          <div
-            className="swell swell-reverse absolute inset-x-0 bottom-0 z-10 h-[12%] [--swell-dist:-640px] [--swell-speed:9s]"
-            style={{ backgroundImage: wave(160, 22, 4, 2, 0.35), backgroundSize: '160px 22px' }}
-          />
-        </div>
-
-        <div className="relative z-20 bg-ink/25">
-          <dl className="shell grid gap-x-10 py-10 sm:grid-cols-2 lg:grid-cols-4 lg:py-8">
-            {HUSBANDRY.map((item) => (
-              <div key={item.title} data-reveal className="flex gap-3 border-t-2 border-paper/25 py-5">
-                <svg
-                  data-tick
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  className="mt-1 h-6 w-6 shrink-0 text-box-mustard"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={3}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M4 12.5l5 5L20 6.5" />
-                </svg>
-                <div>
-                  <dt className="t-head text-[1.35rem]">{item.title}</dt>
-                  <dd className="mt-1.5 text-[0.95rem] leading-relaxed text-paper/80">{item.body}</dd>
-                </div>
-              </div>
-            ))}
-          </dl>
-        </div>
+          ))}
+        </dl>
       </div>
     </section>
   )

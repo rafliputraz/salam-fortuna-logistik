@@ -222,10 +222,10 @@ export const FAQ = [
 ] as const
 
 export const NAV = [
-  { href: '#services', label: 'What we do' },
-  { href: '#journey', label: 'How it moves' },
+  { href: '#services', label: 'Services' },
+  { href: '#process', label: 'How it works' },
+  { href: '#network', label: 'Coverage' },
   { href: '#agency', label: 'Ship agency' },
-  { href: '#contact', label: 'Contact' },
 ] as const
 
 /** One label per intent, used everywhere a rate is asked for. */

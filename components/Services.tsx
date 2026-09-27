@@ -1,133 +1,101 @@
 'use client'
 
-import type { CSSProperties } from 'react'
-import { useRef, useState } from 'react'
+import Image from 'next/image'
 import { SERVICES } from '@/lib/company'
-import { boxColor } from '@/lib/containers'
-import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP } from '@/lib/motion'
+import { Anchor, ArrowRight, Boxes, Doc, Ship, Slot, Truck } from './icons'
 
-/** Card widths on the 12-column wall: wide and narrow alternate row to row. */
-const SPANS = ['lg:col-span-7', 'lg:col-span-5', 'lg:col-span-5', 'lg:col-span-7', 'lg:col-span-6', 'lg:col-span-6']
+const ICONS = [Ship, Doc, Truck, Anchor, Boxes, Slot]
 
 /**
- * What we do, as a wall of container doors. Each card is the end of a box:
- * the doors carry the name, and swing open on hover, focus or a tap to show
- * what is inside. The details are always in the page for screen readers;
- * the doors are only paint.
+ * Services as a bento grid. Sea freight leads, on the photograph of a ship
+ * underway; ship agency sits on the deep navy; the rest are plain cards.
+ * Every card lifts a little under the pointer.
  */
 export default function Services() {
-  const scope = useRef<HTMLElement>(null)
-
-  // The first time the wall comes into view, each pair of doors cracks open
-  // and shuts again in turn: a hint that they open, shown rather than told.
-  useGSAP(
-    () => {
-      if (prefersReducedMotion()) return
-      const cards = gsap.utils.toArray<HTMLElement>('.door-card', scope.current)
-      ScrollTrigger.create({
-        trigger: scope.current?.querySelector('ul'),
-        start: 'top 65%',
-        once: true,
-        onEnter: () =>
-          cards.forEach((card, i) => {
-            gsap.delayedCall(0.35 + i * 0.16, () => card.classList.add('is-peek'))
-            gsap.delayedCall(1.15 + i * 0.16, () => card.classList.remove('is-peek'))
-          }),
-      })
-    },
-    { scope }
-  )
-
   return (
-    <section ref={scope} id="services" className="bg-paper py-24 md:py-32">
+    <section id="services" className="bg-paper-2 py-24 md:py-32">
       <div className="shell">
-        <div className="max-w-3xl">
-          <h2 data-split className="t-display text-[length:var(--text-display-s)] text-ink">
-            Six doors. One team behind all of them.
-          </h2>
-          <p data-reveal className="mt-5 max-w-xl text-lg leading-relaxed text-ink-2">
-            Open any of them. Whatever you need moved, cleared or looked after in
-            port, it is the same people on the other side.
+        <div className="flex flex-wrap items-end justify-between gap-8">
+          <div className="max-w-2xl">
+            <p className="eyebrow">Services</p>
+            <h2 data-split className="t-h2 mt-4 text-ink">
+              Everything between your gate and theirs.
+            </h2>
+          </div>
+          <p data-reveal className="max-w-sm text-ink-2">
+            Six services, one team. Whatever you need moved, cleared or looked after in port,
+            the same people are on the file.
           </p>
         </div>
 
-        <ul className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-12">
-          {SERVICES.map((s, i) => (
-            <DoorCard key={s.title} index={i} service={s} span={SPANS[i]} />
-          ))}
+        <ul className="mt-14 grid auto-rows-[minmax(16rem,auto)] gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {SERVICES.map((s, i) => {
+            const Icon = ICONS[i]
+            const lead = i === 0
+            const dark = i === 3
+            return (
+              <li
+                key={s.title}
+                data-reveal
+                className={`group relative flex flex-col overflow-hidden rounded-3xl p-7 transition-[transform,box-shadow] duration-500 ease-[var(--ease-out)] hover:-translate-y-1 md:p-8 ${
+                  lead
+                    ? 'min-h-[26rem] text-white md:col-span-2 lg:row-span-2'
+                    : dark
+                      ? 'bg-deep text-white'
+                      : 'card hover:shadow-[0_24px_48px_-24px_oklch(var(--c-ink)/0.3)]'
+                }`}
+              >
+                {lead && (
+                  <>
+                    <Image
+                      src="/images/photos/ship-at-sea.webp"
+                      alt=""
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 56rem"
+                      className="object-cover transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-105"
+                    />
+                    <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-deep/90 via-deep/30 to-transparent" />
+                  </>
+                )}
+                <div className="relative flex items-start justify-between">
+                  <span
+                    className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
+                      lead ? 'glass !border-white/30 !bg-white/15 text-white' : dark ? 'bg-white/10 text-sky' : 'bg-signal/10 text-signal'
+                    }`}
+                  >
+                    <Icon className="h-6 w-6" />
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className={`flex h-10 w-10 items-center justify-center rounded-full transition-transform duration-300 group-hover:-rotate-45 ${
+                      lead || dark ? 'bg-white/10 text-white' : 'bg-paper-3 text-ink'
+                    }`}
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                </div>
+                <div className="relative mt-auto pt-10">
+                  <p className={`text-sm font-semibold ${lead || dark ? 'text-white/60' : 'text-ink-3'}`}>{String(i + 1).padStart(2, '0')}</p>
+                  <h3 className={`t-h3 mt-2 ${lead ? 'text-4xl md:text-5xl' : 'text-2xl'}`}>{s.title}</h3>
+                  <p className={`mt-3 max-w-md leading-relaxed ${lead || dark ? 'text-white/80' : 'text-ink-2'}`}>{s.body}</p>
+                  <ul className="mt-5 flex flex-wrap gap-2">
+                    {s.detail.map((d) => (
+                      <li
+                        key={d}
+                        className={`rounded-full px-3 py-1 text-xs font-medium ${
+                          lead || dark ? 'bg-white/10 text-white ring-1 ring-inset ring-white/20' : 'bg-paper-2 text-ink-2 ring-1 ring-inset ring-line'
+                        }`}
+                      >
+                        {d}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            )
+          })}
         </ul>
       </div>
     </section>
-  )
-}
-
-function DoorCard({
-  index,
-  service,
-  span,
-}: {
-  index: number
-  service: (typeof SERVICES)[number]
-  span: string
-}) {
-  const [open, setOpen] = useState(false)
-  const paint = { '--c': boxColor(service.color), '--rib': '12px' } as CSSProperties
-  const id = `service-${index}`
-
-  return (
-    <li data-reveal className={`door-card relative h-[21rem] ${span}`} data-open={open}>
-      {/* Inside the box: what the service is. */}
-      <div className="absolute inset-0 flex flex-col justify-between border-2 border-ink/10 bg-paper-2 p-7">
-        <div>
-          <span className="t-label text-ink-3">{String(index + 1).padStart(2, '0')}</span>
-          <h3 id={id} className="t-head mt-2 text-[2rem] text-ink">
-            {service.title}
-          </h3>
-          <p className="mt-3 max-w-md leading-relaxed text-ink-2">{service.body}</p>
-        </div>
-        <ul className="flex flex-wrap gap-2">
-          {service.detail.map((d) => (
-            <li
-              key={d}
-              className="rounded-full px-3.5 py-1.5 text-sm font-semibold text-paper"
-              style={{ background: boxColor(service.color) }}
-            >
-              {d}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* The doors. A button so a tap or a key can open them. */}
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={id}
-        aria-label={`${open ? 'Close' : 'Open'} the doors: ${service.title}`}
-        onClick={() => setOpen((v) => !v)}
-        className={`absolute inset-0 flex ${open ? 'pointer-events-none' : ''}`}
-      >
-        <span className="door-leaf door-leaf-l steel-door relative h-full w-1/2" style={paint}>
-          <span className="absolute bottom-6 left-6 text-left text-paper">
-            <span className="t-label block opacity-80">{String(index + 1).padStart(2, '0')}</span>
-            <span className="t-head mt-1 block text-[clamp(1.6rem,2.4vw,2.2rem)] leading-[0.95]">
-              {service.title}
-            </span>
-          </span>
-        </span>
-        <span className="door-leaf door-leaf-r steel-door relative h-full w-1/2" style={paint}>
-          <span className="t-label absolute bottom-6 right-6 text-paper opacity-80">Open</span>
-        </span>
-      </button>
-      {open && (
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="t-label absolute right-4 top-4 rounded-full bg-ink px-3 py-1.5 text-paper"
-        >
-          Close
-        </button>
-      )}
-    </li>
   )
 }

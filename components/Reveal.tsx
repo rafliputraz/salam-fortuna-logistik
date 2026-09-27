@@ -57,6 +57,8 @@ export default function Reveal({ children }: { children: React.ReactNode }) {
             ease: 'power3.out',
             stagger: 0.08,
             overwrite: true,
+            // Hand transform back to CSS so hover lifts still work.
+            clearProps: 'transform',
           }),
       })
 

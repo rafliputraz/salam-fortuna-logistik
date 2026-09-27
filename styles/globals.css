@@ -18,23 +18,23 @@
   body {
     @apply bg-paper font-sans text-ink antialiased;
     font-size: 1.0625rem;
-    line-height: 1.6;
+    line-height: 1.65;
+    font-feature-settings: 'ss01';
   }
 
   ::selection {
-    background: oklch(var(--c-signal));
-    color: oklch(var(--c-paper));
+    background: oklch(var(--c-signal) / 0.18);
   }
 
   /* Shown instantly, never animated in. */
   :focus-visible {
-    outline: 2.5px solid oklch(var(--c-box-cobalt));
+    outline: 2px solid oklch(var(--c-signal));
     outline-offset: 3px;
   }
 
   section[id],
   main[id] {
-    scroll-margin-top: 5rem;
+    scroll-margin-top: 5.5rem;
   }
 
   h1,
@@ -42,6 +42,11 @@
   h3 {
     overflow-wrap: anywhere;
     min-width: 0;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   html.lenis,
@@ -57,220 +62,126 @@
 }
 
 @layer components {
-  /* ---- Type roles ------------------------------------------------------ */
-
   .t-display {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-variation-settings: 'opsz' 96, 'wdth' 88;
-    line-height: 0.9;
+    font-weight: 700;
+    line-height: 1.02;
     letter-spacing: -0.035em;
   }
 
-  .t-head {
-    font-family: var(--font-display);
+  .t-h2 {
+    font-size: var(--text-h2);
     font-weight: 700;
-    font-variation-settings: 'opsz' 48, 'wdth' 92;
-    line-height: 1;
-    letter-spacing: -0.02em;
+    line-height: 1.06;
+    letter-spacing: -0.03em;
   }
 
-  .t-label {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+  .t-h3 {
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+
+  /* Small caps-style eyebrow above a heading. */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-[0.8rem] font-semibold uppercase tracking-[0.12em] text-signal;
+  }
+  .eyebrow::before {
+    content: '';
+    @apply h-px w-6 bg-current;
   }
 
   .shell {
-    @apply mx-auto w-full max-w-shell px-4 sm:px-6 md:px-10;
+    @apply mx-auto w-full max-w-shell px-5 sm:px-8 lg:px-10;
   }
 
-  /* ---- Controls: pills that press like a switch ------------------------ */
+  /* ---- Buttons --------------------------------------------------------- */
 
   .btn {
     @apply inline-flex select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-full px-6 py-3.5 text-[0.95rem] font-semibold;
     transition:
-      transform var(--dur-press) var(--ease-out),
-      background-color var(--dur-hover) ease,
-      border-color var(--dur-hover) ease,
-      color var(--dur-hover) ease;
+      transform 140ms var(--ease-out),
+      background-color 200ms ease,
+      box-shadow 200ms ease,
+      color 200ms ease;
   }
-
   .btn:active {
     transform: scale(0.97);
   }
 
   .btn-signal {
-    @apply btn bg-signal-deep text-paper;
+    @apply btn bg-signal text-white;
+    box-shadow: 0 8px 20px -8px oklch(var(--c-signal) / 0.55);
   }
 
-  .btn-ink {
-    @apply btn bg-ink text-paper;
+  .btn-ghost {
+    @apply btn bg-white text-ink ring-1 ring-inset ring-line-strong;
   }
 
-  .btn-line {
-    @apply btn border-2 border-ink/15 text-ink;
+  .btn-light {
+    @apply btn bg-white text-deep;
   }
 
   @media (hover: hover) and (pointer: fine) {
     .btn-signal:hover {
-      @apply bg-signal;
+      @apply bg-signal-deep;
     }
-    .btn-ink:hover {
-      @apply bg-ink/85;
-    }
-    .btn-line:hover {
-      @apply border-ink/40;
+    .btn-ghost:hover {
+      @apply ring-ink/30;
     }
     .btn-arrow {
-      transition: transform var(--dur-hover) var(--ease-out);
+      transition: transform 200ms var(--ease-out);
     }
-    .btn-signal:hover .btn-arrow,
-    .btn-ink:hover .btn-arrow,
-    .btn-line:hover .btn-arrow {
+    .btn:hover .btn-arrow {
       transform: translateX(3px);
     }
   }
 
+  /* ---- Surfaces -------------------------------------------------------- */
+
+  .card {
+    @apply rounded-3xl border border-line bg-white;
+    box-shadow:
+      0 1px 2px oklch(var(--c-ink) / 0.04),
+      0 12px 32px -16px oklch(var(--c-ink) / 0.12);
+  }
+
   .glass {
-    @apply border border-ink/10 bg-paper/80;
-    backdrop-filter: blur(16px) saturate(160%);
-    -webkit-backdrop-filter: blur(16px) saturate(160%);
-    box-shadow: 0 8px 30px -18px oklch(var(--c-ink) / 0.35);
+    @apply border border-white/60 bg-white/75;
+    backdrop-filter: blur(16px) saturate(170%);
+    -webkit-backdrop-filter: blur(16px) saturate(170%);
   }
 
   @media (prefers-reduced-transparency: reduce) {
     .glass {
-      @apply bg-paper;
+      @apply bg-white;
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
     }
   }
 
   .navlink {
-    @apply relative text-[0.92rem] font-medium text-ink-2;
-    transition: color var(--dur-hover) ease;
+    @apply relative text-[0.93rem] font-medium text-ink-2;
+    transition: color 200ms ease;
   }
-
-  .navlink::after {
-    content: '';
-    @apply absolute -bottom-1 left-0 h-[2px] w-full origin-left scale-x-0 bg-signal;
-    transition: transform var(--dur-hover) var(--ease-out);
-  }
-
   @media (hover: hover) and (pointer: fine) {
     .navlink:hover {
       @apply text-ink;
     }
-    .navlink:hover::after {
-      transform: scaleX(1);
-    }
   }
 
   .field {
-    @apply w-full border-0 border-b-2 border-ink/20 bg-transparent px-0 py-2.5 font-sans text-lg text-ink placeholder:text-ink-3 focus:border-box-cobalt focus:outline-none;
-    border-radius: var(--radius-none);
-    transition: border-color var(--dur-hover) ease;
+    @apply w-full rounded-xl border border-line-strong bg-white px-4 py-3 text-base text-ink placeholder:text-ink-3/70 focus:border-signal focus:outline-none focus:ring-4 focus:ring-signal/10;
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease;
   }
-
   .field[aria-invalid='true'] {
     @apply border-signal;
   }
 
-  /* ---- Container paint --------------------------------------------------
-     A container's colour arrives as --c. Corrugation is drawn with gradients
-     so any element can wear it: flat panels, 3D faces, door leaves. */
-
-  .steel {
-    background-color: var(--c);
-    background-image:
-      linear-gradient(to bottom, rgb(0 0 0 / 0.22), transparent 7%, transparent 93%, rgb(0 0 0 / 0.28)),
-      repeating-linear-gradient(
-        90deg,
-        rgb(0 0 0 / 0.16) 0 1px,
-        transparent 1px calc(var(--rib, 10px) * 0.35),
-        rgb(255 255 255 / 0.14) calc(var(--rib, 10px) * 0.35) calc(var(--rib, 10px) * 0.5),
-        transparent calc(var(--rib, 10px) * 0.5) var(--rib, 10px)
-      );
-  }
-
-  /* Door end: two leaves, a centre seam and four locking bars. */
-  .steel-door {
-    background-color: color-mix(in oklch, var(--c) 86%, black);
-    background-image:
-      linear-gradient(90deg, transparent 49.2%, rgb(0 0 0 / 0.45) 49.2% 50.8%, transparent 50.8%),
-      linear-gradient(
-        90deg,
-        transparent 13%,
-        rgb(255 255 255 / 0.35) 13% 15%,
-        transparent 15% 35%,
-        rgb(255 255 255 / 0.35) 35% 37%,
-        transparent 37% 63%,
-        rgb(255 255 255 / 0.35) 63% 65%,
-        transparent 65% 85%,
-        rgb(255 255 255 / 0.35) 85% 87%,
-        transparent 87%
-      ),
-      linear-gradient(to bottom, rgb(0 0 0 / 0.25), transparent 8%, transparent 92%, rgb(0 0 0 / 0.3));
-  }
-
-  /* ---- Door cards -------------------------------------------------------
-     A service card behind a pair of container doors. Hover, focus or a tap
-     swings them open; the content is always in the DOM underneath. */
-
-  .door-card {
-    perspective: 1400px;
-  }
-
-  .door-leaf {
-    transition: transform var(--dur-door) var(--ease-drawer);
-    backface-visibility: hidden;
-  }
-
-  .door-leaf-l {
-    transform-origin: left center;
-  }
-
-  .door-leaf-r {
-    transform-origin: right center;
-  }
-
-  .door-card[data-open='true'] .door-leaf-l {
-    transform: rotateY(-104deg);
-  }
-
-  .door-card[data-open='true'] .door-leaf-r {
-    transform: rotateY(104deg);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .door-card:hover .door-leaf-l {
-      transform: rotateY(-104deg);
-    }
-    .door-card:hover .door-leaf-r {
-      transform: rotateY(104deg);
-    }
-  }
-
-  .door-card:focus-within .door-leaf-l {
-    transform: rotateY(-104deg);
-  }
-
-  .door-card:focus-within .door-leaf-r {
-    transform: rotateY(104deg);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .door-leaf {
-      transition: opacity 150ms ease;
-    }
-    .door-card[data-open='true'] .door-leaf,
-    .door-card:focus-within .door-leaf {
-      transform: none;
-      opacity: 0;
-    }
+  .dots {
+    background-image: radial-gradient(oklch(var(--c-ink) / 0.09) 1px, transparent 1px);
+    background-size: 22px 22px;
   }
 
   /* ---- Reveal ---------------------------------------------------------- */
@@ -287,135 +198,52 @@
     }
   }
 
-  /* The doors crack open in turn when the wall first comes into view. */
-  .door-card.is-peek .door-leaf-l {
-    transform: rotateY(-38deg);
-  }
+  /* ---- Ambient --------------------------------------------------------- */
 
-  .door-card.is-peek .door-leaf-r {
-    transform: rotateY(38deg);
-  }
-
-  /* A load on a hook, for the small crane in the call band. */
-  @keyframes hang-swing {
-    from {
-      transform: rotate(-3deg);
-    }
-    to {
-      transform: rotate(3deg);
-    }
-  }
-
-  .hang-swing {
-    transform-origin: 53.4% -60%;
-    animation: hang-swing 2.6s ease-in-out infinite alternate;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hang-swing {
-      animation: none;
-    }
-  }
-}
-
-@layer utilities {
-  @keyframes sheet {
-    from {
-      opacity: 0;
-      transform: translateY(-6px) scale(0.98);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .animate-\[sheet_220ms_var\(--ease-out\)\] {
-      animation: none;
-    }
-  }
-
-  /* ---- The sea in the agency block ------------------------------------- */
-
-  /* Swell lines drift sideways; each layer sets its own --swell-speed. */
-  @keyframes swell {
-    to {
-      background-position-x: var(--swell-dist, -640px);
-    }
-  }
-
-  .swell {
-    animation: swell var(--swell-speed, 20s) linear infinite;
-  }
-
-  .swell-reverse {
-    animation-direction: reverse;
-  }
-
-  /* A laden ship rides the swell: a slow heave with a touch of pitch. */
-  @keyframes ship-bob {
+  @keyframes float {
     0%,
     100% {
-      transform: translateY(0) rotate(0deg);
-    }
-    35% {
-      transform: translateY(-5px) rotate(-0.5deg);
-    }
-    70% {
-      transform: translateY(3px) rotate(0.35deg);
-    }
-  }
-
-  .ship-bob {
-    animation: ship-bob 6.5s ease-in-out infinite;
-    transform-origin: 50% 90%;
-  }
-
-  /* Churned water astern: foam that streams back and breathes. */
-  @keyframes foam {
-    to {
-      background-position-x: 180px, 110px, 0;
-    }
-  }
-
-  .wake {
-    border-radius: 999px 0 0 999px;
-    background:
-      radial-gradient(circle at 20% 50%, rgb(255 255 255 / 0.8) 0 2px, transparent 3px) 0 0 / 22px 12px,
-      radial-gradient(circle at 60% 40%, rgb(255 255 255 / 0.55) 0 3px, transparent 4px) 0 0 / 34px 16px,
-      linear-gradient(to left, rgb(255 255 255 / 0.75), rgb(255 255 255 / 0.25) 45%, transparent);
-    -webkit-mask-image: linear-gradient(to left, black, transparent);
-    mask-image: linear-gradient(to left, black, transparent);
-    animation: foam 1.6s linear infinite;
-  }
-
-  @keyframes bow-wave {
-    0%,
-    100% {
-      transform: scaleX(1) translateX(0);
-      opacity: 0.85;
+      transform: translateY(0);
     }
     50% {
-      transform: scaleX(1.25) translateX(6%);
-      opacity: 0.55;
+      transform: translateY(-8px);
     }
   }
+  .float {
+    animation: float 6s ease-in-out infinite;
+  }
 
-  .bow-wave {
-    border-radius: 0 999px 999px 0;
-    background: linear-gradient(to right, rgb(255 255 255 / 0.85), transparent);
-    transform-origin: left center;
-    animation: bow-wave 1.8s ease-in-out infinite;
+  @keyframes ping-soft {
+    0% {
+      transform: scale(0.6);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(2.6);
+      opacity: 0;
+    }
+  }
+  .ping-soft {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ping-soft 2.4s var(--ease-out) infinite;
+  }
+
+  @keyframes dash {
+    to {
+      stroke-dashoffset: -40;
+    }
+  }
+  .route-flow {
+    stroke-dasharray: 6 14;
+    animation: dash 1.6s linear infinite;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .swell,
-    .ship-bob,
-    .wake,
-    .bow-wave {
+    .float,
+    .ping-soft,
+    .route-flow {
       animation: none;
     }
-  }
-
-  .mask-fade-x {
-    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
   }
 }

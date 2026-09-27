@@ -1,69 +1,40 @@
-/* Hallmark · macrostructure: Stacked Yard (bespoke) · tone: playful-industrial · anchor hue: 27 (SFL signal red)
- * theme: custom · vibe: "container yard at noon, painted steel, bold stencils"
- * paper oklch(97.6% 0.004 250) · accent oklch(58.6% 0.225 27.6) · Bricolage Grotesque + Onest + Martian Mono
- * axes: light / display-heavy grotesk / warm · nav: N5 floating pill · footer: Ft5 statement
- * Hallmark · pre-emit critique: P5 H4 E4 S5 R4 V5
+/* Hallmark · macrostructure: Corporate Modern (bespoke) · tone: calm, assured, premium
+ * theme: light · vibe: "a global forwarder's site, with a Panjang address"
+ * paper oklch(99% 0.002 250) · accent oklch(55% 0.21 27) · Plus Jakarta Sans
+ * axes: light / geometric sans / cool neutrals with one warm accent · nav: N1 bar · footer: Ft3 columns
  *
- * Every colour, face, space, ease and duration on the site is named here.
- * Colours are bare OKLCH channels so Tailwind can add alpha.
+ * Photography carries the colour; the interface stays neutral. The SFL red
+ * is the only accent and means "act". Colours are bare OKLCH channels so
+ * Tailwind can add alpha.
  */
 :root {
-  /* Grounds: cool daylight white, not cream. */
-  --c-paper: 97.6% 0.004 250;
-  --c-paper-2: 94.2% 0.007 250;
-  --c-line: 87% 0.01 250;
-  --c-line-strong: 72% 0.015 255;
+  --c-paper: 99.2% 0.002 250;
+  --c-paper-2: 97% 0.005 250;
+  --c-paper-3: 94.5% 0.008 250;
+  --c-line: 91.5% 0.008 255;
+  --c-line-strong: 84% 0.012 255;
 
-  /* Ink: a deep navy, never pure black. */
-  --c-ink: 20% 0.035 262;
-  --c-ink-2: 42% 0.025 260;
-  --c-ink-3: 55% 0.02 258;
+  --c-ink: 21% 0.04 262;
+  --c-ink-2: 44% 0.025 262;
+  --c-ink-3: 58% 0.02 260;
 
-  /* The one UI accent: the red of the SFL mark. Actions and identity only. */
-  --c-signal: 58.6% 0.225 27.6;
-  --c-signal-deep: 50% 0.2 27;
+  /* Deep navy for the dark bands and the footer. */
+  --c-deep: 19% 0.045 262;
+  --c-deep-2: 25% 0.045 262;
 
-  /* Container paint. Illustration only, never UI chrome. */
-  --c-box-magenta: 60% 0.22 355;
-  --c-box-orange: 70% 0.175 48;
-  --c-box-cobalt: 47% 0.17 262;
-  --c-box-green: 56% 0.12 160;
-  --c-box-mustard: 80% 0.15 85;
-  --c-box-steel: 68% 0.025 250;
-  --c-box-red: 55% 0.19 27;
+  --c-signal: 55% 0.21 27;
+  --c-signal-deep: 48% 0.19 27;
 
-  /* Semantic state, used once: office open. */
-  --c-go: 60% 0.15 155;
+  /* A cool highlight for small details on dark grounds. */
+  --c-sky: 78% 0.1 230;
 
-  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
-  --font-body: 'Onest', system-ui, sans-serif;
-  --font-mono: 'Martian Mono', ui-monospace, monospace;
+  --c-go: 62% 0.15 155;
 
-  /* 4pt scale. */
-  --space-2xs: 0.25rem;
-  --space-xs: 0.5rem;
-  --space-sm: 0.75rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
-  --space-4xl: 6rem;
-  --space-5xl: 8rem;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
 
-  --text-display: clamp(3rem, 7.4vw, 7.25rem);
-  --text-display-s: clamp(2.4rem, 5.4vw, 5rem);
-  --text-4xl: clamp(2rem, 3.8vw, 3.4rem);
-
-  /* Surfaces are square like steel; controls are pills. */
-  --radius-none: 0;
-  --radius-pill: 999px;
+  --text-display: clamp(2.6rem, 4.4vw, 4.4rem);
+  --text-h2: clamp(2.2rem, 3.8vw, 3.6rem);
 
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
-
-  --dur-press: 140ms;
-  --dur-hover: 220ms;
-  --dur-door: 560ms;
 }
