@@ -37,7 +37,7 @@ export default function Faq() {
               Before you ask us.
             </h2>
             <p data-reveal className="mt-5 max-w-sm leading-relaxed text-ink-2">
-              If yours is not here, put it on the booking label below. We answer
+              If yours is not here, put it in your message below. We answer
               questions we have not been paid for.
             </p>
           </div>

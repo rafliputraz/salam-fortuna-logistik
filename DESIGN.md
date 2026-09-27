@@ -1,60 +1,60 @@
-# Salam Fortuna Logistik: design system
+# Salam Fortuna Logistik: design system (Chart Room)
 
 Tokens live in `styles/tokens.css`; Tailwind maps them in `tailwind.config.js`.
 Never add a raw colour or font-family in a component: add a token first.
 
 ## World
-A container yard at noon. Cool daylight-white paper, navy ink, and painted
-steel: the saturated colours of real boxes, in big blocks. One UI accent, the
-SFL red, for actions and identity. Container paint is illustration only.
+A ship's bridge at night. The page is an electronic chart display in night
+mode: deep-water navy, cyan charted linework, magenta for the planned route,
+amber for our own ship. Amber is the one action colour, so a button always
+reads as "this is you". The SFL red stays on the mark only.
 
 ## Colour (OKLCH)
 | Token | Use |
 | --- | --- |
-| `paper` / `paper-2` | page grounds |
+| `paper` / `paper-2` / `land` | water, panels, land fill |
+| `line` / `line-strong` | rules, bezels, grid |
 | `ink` / `ink-2` / `ink-3` | text, strongest to quietest |
-| `signal` / `signal-deep` | actions and identity only |
-| `box-*` (magenta, orange, cobalt, green, mustard, steel, red) | container paint, never UI chrome |
-| `go` | office-open state, used once |
+| `signal` / `signal-deep` | own ship and every action |
+| `cyan` | coast, radar, readouts |
+| `route` | shipping lanes, errors |
+| `brand` | SFL red, identity only |
+| `go` | office open, cleared, done |
 
-Light theme only, by design: the colour-block concept depends on it.
+Dark theme only, by design.
 
 ## Type
-- Display: Bricolage Grotesque 800, `opsz` 96, `wdth` 88 (`.t-display`, `.t-head`). Never italic.
-- Body: Onest 400/500/600.
-- Labels and codes: Martian Mono (`.t-label`).
+- Display: Big Shoulders Display 900, uppercase (`.t-display`, `.t-head`); `.t-outline` for hollow chart-line type.
+- Body: IBM Plex Sans 400/500/600.
+- Readouts, labels, buttons: IBM Plex Mono (`.t-label`).
 
 ## Shape
-Surfaces and containers are square, like steel. Controls are pills.
+Square panels in `.bezel` frames with cyan corner brackets; buttons are
+cut-corner console keys (`.btn-signal`, `.btn-line`).
 
-## Paint utilities
-- `.steel`: corrugated side of a box in `--c` (rib pitch `--rib`).
-- `.steel-door`: a door end with seam and locking bars.
-
-## Container photography
-Real container photos, cut out and recoloured per paint, live in
-`public/images/containers/{view}-{paint}.webp` (a redrawn view gets a `.v<n>` suffix via `REVISION`, so caches pick it up). Use `containerSrc(view, paint)`
-and `VIEWS` (intrinsic sizes) from `lib/containers.ts`. Views: `side`, `door`,
-`angled20`, `angled40`, `open`, `top20`, `hanging`. A hanging box's cables sit
-at 53.4% of its width; extend them with `cable.webp` tiled upward.
+## The chart
+`lib/chart-data.ts` is generated from Natural Earth 1:10m land (public
+domain) with d3-geo, Mercator, 93°E to 122°E. Do not edit it by hand.
+`lib/chart.ts` projects lon/lat to chart units and back, and formats
+positions. Markers sit inside `scale(var(--s))` groups so they keep one size
+on screen at every zoom; linework uses `vector-effect: non-scaling-stroke`.
 
 ## Motion
-- Hero: a stack of photographed boxes is set down tier by tier on load, the
-  tiers lift apart as you scroll away, and they shift in depth under the mouse.
-- Section headings rise in by the line (`data-split`); body content fades up
-  (`data-reveal`).
-- Port train: the page's one marquee, velocity-reactive.
-- Journey: a box hangs from a crane, always swinging gently. It is lowered in
-  as the section arrives; on desktop the section pins and, per leg, the crane
-  hoists and slews it while it takes that leg's paint.
-- Services: container doors swing open on hover, focus or tap, and peek open
-  once in sequence when the wall first scrolls in.
-- Agency: the real ship photo sails left to right on scroll over drifting swell.
-- Contact: a rubber stamp lands on the booking label. CTA: a box swings on a hook.
-- Footer: the wordmark boxes slide in from alternate sides.
-- Promises: cards stack as sticky tiers.
-- Every scroll effect has a reduced-motion path (no pins; doors fade).
-- `Reveal` re-measures all triggers when the page height changes.
+- Boot sequence (`Intro`): once per session, then closes to a point.
+- Chart stage: coast draws in, lanes flow, radar sweeps, traffic runs the
+  lanes, crosshair reads out lat/lon. On desktop it pins and the camera
+  flies through the five legs (network, yard, Sunda Strait with own ship,
+  berth with CLEARED stamp, road inland). Phones get `VoyageList`.
+- Ticker: the one marquee.
+- Instruments: six live gauges; cards power on with a flicker and the title
+  scrambles in; a light follows the pointer.
+- Departures: split-flap board riffles in, and again on row hover.
+- Port call: pinned; the ship crosses left to right, AIS tag updates, the
+  checklist ticks off.
+- Logbook: pinned horizontal log; the vision's words light as they pass.
+- Transmit: signal meter idles and jumps as you type.
+- Footer: wordmark letters rise with the last of the scroll.
+- Every loop and scroll effect has a reduced-motion path.
 
-Earlier directions (dark cinematic WebGL hero with a ship on a reflective sea)
-are in git history, last at c490814.
+Earlier directions (daylight container yard; dark cinematic WebGL ship) are
+on the `redesign/container-ship-scroll` branch and in git history.

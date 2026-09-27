@@ -223,7 +223,7 @@ export const FAQ = [
 
 export const NAV = [
   { href: '#services', label: 'What we do' },
-  { href: '#journey', label: 'How it moves' },
+  { href: '#gateways', label: 'Gateways' },
   { href: '#agency', label: 'Ship agency' },
   { href: '#contact', label: 'Contact' },
 ] as const

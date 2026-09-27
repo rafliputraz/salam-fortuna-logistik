@@ -13,6 +13,7 @@
   html {
     -webkit-text-size-adjust: 100%;
     background: oklch(var(--c-paper));
+    color-scheme: dark;
   }
 
   body {
@@ -28,7 +29,7 @@
 
   /* Shown instantly, never animated in. */
   :focus-visible {
-    outline: 2.5px solid oklch(var(--c-box-cobalt));
+    outline: 2px solid oklch(var(--c-signal));
     outline-offset: 3px;
   }
 
@@ -61,40 +62,45 @@
 
   .t-display {
     font-family: var(--font-display);
-    font-weight: 800;
-    font-variation-settings: 'opsz' 96, 'wdth' 88;
-    line-height: 0.9;
-    letter-spacing: -0.035em;
+    font-weight: 900;
+    line-height: 0.84;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
   }
 
   .t-head {
     font-family: var(--font-display);
-    font-weight: 700;
-    font-variation-settings: 'opsz' 48, 'wdth' 92;
-    line-height: 1;
-    letter-spacing: -0.02em;
+    font-weight: 800;
+    line-height: 0.95;
+    text-transform: uppercase;
   }
 
   .t-label {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 500;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+  }
+
+  /* Hollow display type: the chart's own linework. */
+  .t-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px oklch(var(--c-cyan) / 0.7);
   }
 
   .shell {
     @apply mx-auto w-full max-w-shell px-4 sm:px-6 md:px-10;
   }
 
-  /* ---- Controls: pills that press like a switch ------------------------ */
+  /* ---- Controls: cut-corner keys, like a console ----------------------- */
 
   .btn {
-    @apply inline-flex select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-full px-6 py-3.5 text-[0.95rem] font-semibold;
+    @apply inline-flex select-none items-center justify-center gap-2.5 whitespace-nowrap px-6 py-3.5 font-mono text-[0.8rem] font-medium uppercase tracking-[0.08em];
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
     transition:
       transform var(--dur-press) var(--ease-out),
       background-color var(--dur-hover) ease,
-      border-color var(--dur-hover) ease,
       color var(--dur-hover) ease;
   }
 
@@ -103,42 +109,53 @@
   }
 
   .btn-signal {
-    @apply btn bg-signal-deep text-paper;
-  }
-
-  .btn-ink {
-    @apply btn bg-ink text-paper;
+    @apply btn bg-signal text-paper;
   }
 
   .btn-line {
-    @apply btn border-2 border-ink/15 text-ink;
+    @apply btn bg-ink/10 text-ink;
+    box-shadow: inset 0 0 0 1px oklch(var(--c-ink) / 0.25);
   }
 
   @media (hover: hover) and (pointer: fine) {
     .btn-signal:hover {
-      @apply bg-signal;
-    }
-    .btn-ink:hover {
-      @apply bg-ink/85;
+      @apply bg-ink;
     }
     .btn-line:hover {
-      @apply border-ink/40;
+      @apply bg-ink/20;
     }
     .btn-arrow {
       transition: transform var(--dur-hover) var(--ease-out);
     }
-    .btn-signal:hover .btn-arrow,
-    .btn-ink:hover .btn-arrow,
-    .btn-line:hover .btn-arrow {
+    .btn:hover .btn-arrow {
       transform: translateX(3px);
     }
   }
 
+  /* A bezel: the frame round every instrument on the bridge. */
+  .bezel {
+    @apply relative border border-line bg-paper-2/70;
+    box-shadow:
+      inset 0 1px 0 oklch(var(--c-ink) / 0.06),
+      0 20px 40px -24px rgb(0 0 0 / 0.6);
+  }
+
+  .bezel::before,
+  .bezel::after {
+    content: '';
+    @apply pointer-events-none absolute h-3 w-3 border-cyan/60;
+  }
+  .bezel::before {
+    @apply -left-px -top-px border-l-2 border-t-2;
+  }
+  .bezel::after {
+    @apply -bottom-px -right-px border-b-2 border-r-2;
+  }
+
   .glass {
-    @apply border border-ink/10 bg-paper/80;
-    backdrop-filter: blur(16px) saturate(160%);
-    -webkit-backdrop-filter: blur(16px) saturate(160%);
-    box-shadow: 0 8px 30px -18px oklch(var(--c-ink) / 0.35);
+    @apply border border-ink/10 bg-paper/70;
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
   }
 
   @media (prefers-reduced-transparency: reduce) {
@@ -150,13 +167,13 @@
   }
 
   .navlink {
-    @apply relative text-[0.92rem] font-medium text-ink-2;
+    @apply relative font-mono text-[0.75rem] uppercase tracking-[0.08em] text-ink-2;
     transition: color var(--dur-hover) ease;
   }
 
   .navlink::after {
     content: '';
-    @apply absolute -bottom-1 left-0 h-[2px] w-full origin-left scale-x-0 bg-signal;
+    @apply absolute -bottom-1.5 left-0 h-px w-full origin-left scale-x-0 bg-signal;
     transition: transform var(--dur-hover) var(--ease-out);
   }
 
@@ -170,106 +187,35 @@
   }
 
   .field {
-    @apply w-full border-0 border-b-2 border-ink/20 bg-transparent px-0 py-2.5 font-sans text-lg text-ink placeholder:text-ink-3 focus:border-box-cobalt focus:outline-none;
-    border-radius: var(--radius-none);
+    @apply w-full border-0 border-b border-ink/25 bg-transparent px-0 py-2.5 font-sans text-lg text-ink placeholder:text-ink-3/70 focus:border-signal focus:outline-none;
+    border-radius: 0;
     transition: border-color var(--dur-hover) ease;
   }
 
   .field[aria-invalid='true'] {
-    @apply border-signal;
+    @apply border-route;
   }
 
-  /* ---- Container paint --------------------------------------------------
-     A container's colour arrives as --c. Corrugation is drawn with gradients
-     so any element can wear it: flat panels, 3D faces, door leaves. */
-
-  .steel {
-    background-color: var(--c);
+  /* Faint chart grid behind a section. */
+  .chart-grid {
     background-image:
-      linear-gradient(to bottom, rgb(0 0 0 / 0.22), transparent 7%, transparent 93%, rgb(0 0 0 / 0.28)),
-      repeating-linear-gradient(
-        90deg,
-        rgb(0 0 0 / 0.16) 0 1px,
-        transparent 1px calc(var(--rib, 10px) * 0.35),
-        rgb(255 255 255 / 0.14) calc(var(--rib, 10px) * 0.35) calc(var(--rib, 10px) * 0.5),
-        transparent calc(var(--rib, 10px) * 0.5) var(--rib, 10px)
-      );
+      linear-gradient(oklch(var(--c-cyan) / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(var(--c-cyan) / 0.05) 1px, transparent 1px);
+    background-size: 64px 64px;
   }
 
-  /* Door end: two leaves, a centre seam and four locking bars. */
-  .steel-door {
-    background-color: color-mix(in oklch, var(--c) 86%, black);
-    background-image:
-      linear-gradient(90deg, transparent 49.2%, rgb(0 0 0 / 0.45) 49.2% 50.8%, transparent 50.8%),
-      linear-gradient(
-        90deg,
-        transparent 13%,
-        rgb(255 255 255 / 0.35) 13% 15%,
-        transparent 15% 35%,
-        rgb(255 255 255 / 0.35) 35% 37%,
-        transparent 37% 63%,
-        rgb(255 255 255 / 0.35) 63% 65%,
-        transparent 65% 85%,
-        rgb(255 255 255 / 0.35) 85% 87%,
-        transparent 87%
-      ),
-      linear-gradient(to bottom, rgb(0 0 0 / 0.25), transparent 8%, transparent 92%, rgb(0 0 0 / 0.3));
+  /* CRT scanlines, laid over a screen at very low strength. */
+  .scanlines {
+    background-image: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 3px);
   }
 
-  /* ---- Door cards -------------------------------------------------------
-     A service card behind a pair of container doors. Hover, focus or a tap
-     swings them open; the content is always in the DOM underneath. */
-
-  .door-card {
-    perspective: 1400px;
+  /* The boot sequence shows only for scripted, first-time, full-motion visits. */
+  .js:not(.booted) .intro {
+    display: flex;
   }
-
-  .door-leaf {
-    transition: transform var(--dur-door) var(--ease-drawer);
-    backface-visibility: hidden;
-  }
-
-  .door-leaf-l {
-    transform-origin: left center;
-  }
-
-  .door-leaf-r {
-    transform-origin: right center;
-  }
-
-  .door-card[data-open='true'] .door-leaf-l {
-    transform: rotateY(-104deg);
-  }
-
-  .door-card[data-open='true'] .door-leaf-r {
-    transform: rotateY(104deg);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .door-card:hover .door-leaf-l {
-      transform: rotateY(-104deg);
-    }
-    .door-card:hover .door-leaf-r {
-      transform: rotateY(104deg);
-    }
-  }
-
-  .door-card:focus-within .door-leaf-l {
-    transform: rotateY(-104deg);
-  }
-
-  .door-card:focus-within .door-leaf-r {
-    transform: rotateY(104deg);
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .door-leaf {
-      transition: opacity 150ms ease;
-    }
-    .door-card[data-open='true'] .door-leaf,
-    .door-card:focus-within .door-leaf {
-      transform: none;
-      opacity: 0;
+    .js .intro {
+      display: none;
     }
   }
 
@@ -287,135 +233,142 @@
     }
   }
 
-  /* The doors crack open in turn when the wall first comes into view. */
-  .door-card.is-peek .door-leaf-l {
-    transform: rotateY(-38deg);
-  }
+  /* ---- Ambient motion ---------------------------------------------------
+     Loops that run on their own: lanes flowing, targets pinging, the sweep,
+     the small instruments. All stop under reduced motion. */
 
-  .door-card.is-peek .door-leaf-r {
-    transform: rotateY(38deg);
-  }
-
-  /* A load on a hook, for the small crane in the call band. */
-  @keyframes hang-swing {
-    from {
-      transform: rotate(-3deg);
-    }
+  @keyframes lane-flow {
     to {
-      transform: rotate(3deg);
+      stroke-dashoffset: -64;
     }
   }
-
-  .hang-swing {
-    transform-origin: 53.4% -60%;
-    animation: hang-swing 2.6s ease-in-out infinite alternate;
+  .lane-flow {
+    stroke-dasharray: 10 22;
+    animation: lane-flow 2.4s linear infinite;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .hang-swing {
-      animation: none;
+  @keyframes ping {
+    0% {
+      transform: scale(0.4);
+      opacity: 0.9;
     }
-  }
-}
-
-@layer utilities {
-  @keyframes sheet {
-    from {
+    100% {
+      transform: scale(3.2);
       opacity: 0;
-      transform: translateY(-6px) scale(0.98);
     }
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .animate-\[sheet_220ms_var\(--ease-out\)\] {
-      animation: none;
-    }
+  .ping {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ping 2.6s var(--ease-out) infinite;
   }
 
-  /* ---- The sea in the agency block ------------------------------------- */
-
-  /* Swell lines drift sideways; each layer sets its own --swell-speed. */
-  @keyframes swell {
+  @keyframes sweep {
     to {
-      background-position-x: var(--swell-dist, -640px);
+      transform: rotate(360deg);
     }
   }
-
-  .swell {
-    animation: swell var(--swell-speed, 20s) linear infinite;
+  .sweep {
+    animation: sweep 6s linear infinite;
   }
 
-  .swell-reverse {
-    animation-direction: reverse;
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  .blink {
+    animation: blink 1.1s steps(1) infinite;
   }
 
-  /* A laden ship rides the swell: a slow heave with a touch of pitch. */
-  @keyframes ship-bob {
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  .marquee {
+    animation: marquee 48s linear infinite;
+  }
+
+  @keyframes needle {
     0%,
     100% {
-      transform: translateY(0) rotate(0deg);
-    }
-    35% {
-      transform: translateY(-5px) rotate(-0.5deg);
-    }
-    70% {
-      transform: translateY(3px) rotate(0.35deg);
-    }
-  }
-
-  .ship-bob {
-    animation: ship-bob 6.5s ease-in-out infinite;
-    transform-origin: 50% 90%;
-  }
-
-  /* Churned water astern: foam that streams back and breathes. */
-  @keyframes foam {
-    to {
-      background-position-x: 180px, 110px, 0;
-    }
-  }
-
-  .wake {
-    border-radius: 999px 0 0 999px;
-    background:
-      radial-gradient(circle at 20% 50%, rgb(255 255 255 / 0.8) 0 2px, transparent 3px) 0 0 / 22px 12px,
-      radial-gradient(circle at 60% 40%, rgb(255 255 255 / 0.55) 0 3px, transparent 4px) 0 0 / 34px 16px,
-      linear-gradient(to left, rgb(255 255 255 / 0.75), rgb(255 255 255 / 0.25) 45%, transparent);
-    -webkit-mask-image: linear-gradient(to left, black, transparent);
-    mask-image: linear-gradient(to left, black, transparent);
-    animation: foam 1.6s linear infinite;
-  }
-
-  @keyframes bow-wave {
-    0%,
-    100% {
-      transform: scaleX(1) translateX(0);
-      opacity: 0.85;
+      transform: rotate(-9deg);
     }
     50% {
-      transform: scaleX(1.25) translateX(6%);
-      opacity: 0.55;
+      transform: rotate(11deg);
     }
   }
 
-  .bow-wave {
-    border-radius: 0 999px 999px 0;
-    background: linear-gradient(to right, rgb(255 255 255 / 0.85), transparent);
-    transform-origin: left center;
-    animation: bow-wave 1.8s ease-in-out infinite;
+  @keyframes scan {
+    0% {
+      transform: translateY(-120%);
+    }
+    100% {
+      transform: translateY(420%);
+    }
+  }
+
+  @keyframes swing {
+    0%,
+    100% {
+      transform: rotate(-8deg);
+    }
+    50% {
+      transform: rotate(8deg);
+    }
+  }
+
+  @keyframes drive {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(var(--drive, 180px));
+    }
+  }
+
+  @keyframes fill-up {
+    0%,
+    100% {
+      transform: scaleY(0.25);
+    }
+    50% {
+      transform: scaleY(0.9);
+    }
+  }
+
+  @keyframes tick-hand {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Both swell tiles (260px and 180px) repeat evenly over 2340px. */
+  @keyframes swell {
+    to {
+      background-position-x: -2340px;
+    }
+  }
+
+  @keyframes bob {
+    0%,
+    100% {
+      transform: translateY(0) rotate(-0.4deg);
+    }
+    50% {
+      transform: translateY(-5px) rotate(0.4deg);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .swell,
-    .ship-bob,
-    .wake,
-    .bow-wave {
-      animation: none;
+    .lane-flow,
+    .ping,
+    .sweep,
+    .blink,
+    .marquee,
+    .instrument * {
+      animation: none !important;
     }
-  }
-
-  .mask-fade-x {
-    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
   }
 }

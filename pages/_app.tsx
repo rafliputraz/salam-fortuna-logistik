@@ -1,25 +1,24 @@
 import type { AppProps } from 'next/app'
-import { Bricolage_Grotesque, Martian_Mono, Onest } from 'next/font/google'
+import { Big_Shoulders_Display, IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google'
 import SmoothScroll from '@/components/SmoothScroll'
 import '@/styles/globals.css'
 
-// Display: a chunky grotesk with character, like stencilled lettering on
-// painted steel. Its optical-size axis keeps huge headlines tight.
-const display = Bricolage_Grotesque({
+// Display: condensed, tall, the lettering on a harbour sign or a hull.
+const display = Big_Shoulders_Display({
   subsets: ['latin'],
-  axes: ['opsz', 'wdth'],
+  weight: ['600', '800', '900'],
   display: 'swap',
 })
 
-// Body: a friendly, very legible grotesk.
-const body = Onest({
+// Body: engineered and plain, like an instrument manual.
+const body = IBM_Plex_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
   display: 'swap',
 })
 
-// Data: container codes, port codes, labels.
-const mono = Martian_Mono({
+// Readouts: coordinates, port codes, the time.
+const mono = IBM_Plex_Mono({
   subsets: ['latin'],
   weight: ['400', '500'],
   display: 'swap',

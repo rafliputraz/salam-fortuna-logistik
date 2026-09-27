@@ -1,69 +1,52 @@
-/* Hallmark · macrostructure: Stacked Yard (bespoke) · tone: playful-industrial · anchor hue: 27 (SFL signal red)
- * theme: custom · vibe: "container yard at noon, painted steel, bold stencils"
- * paper oklch(97.6% 0.004 250) · accent oklch(58.6% 0.225 27.6) · Bricolage Grotesque + Onest + Martian Mono
- * axes: light / display-heavy grotesk / warm · nav: N5 floating pill · footer: Ft5 statement
- * Hallmark · pre-emit critique: P5 H4 E4 S5 R4 V5
+/* Hallmark · macrostructure: Chart Room (bespoke) · tone: nocturnal-instrument · anchor hue: 75 (own-ship amber)
+ * theme: custom dark · vibe: "a ship's bridge at night, the electronic chart glowing"
+ * paper oklch(14% 0.03 250) · accent oklch(80% 0.16 75) · Big Shoulders Display + IBM Plex Sans + IBM Plex Mono
+ * axes: dark / condensed display / cool with one warm accent · nav: N2 instrument bar · footer: Ft5 statement
  *
- * Every colour, face, space, ease and duration on the site is named here.
+ * Colours follow night-mode ECDIS convention: cyan for charted linework,
+ * magenta for the planned route, amber for our own ship. Amber is the one
+ * action colour, so a button always reads as "this is you".
  * Colours are bare OKLCH channels so Tailwind can add alpha.
  */
 :root {
-  /* Grounds: cool daylight white, not cream. */
-  --c-paper: 97.6% 0.004 250;
-  --c-paper-2: 94.2% 0.007 250;
-  --c-line: 87% 0.01 250;
-  --c-line-strong: 72% 0.015 255;
+  /* Grounds: deep water at night, never pure black. */
+  --c-paper: 14% 0.03 250;
+  --c-paper-2: 18% 0.035 248;
+  --c-land: 23% 0.04 242;
+  --c-line: 32% 0.04 240;
+  --c-line-strong: 45% 0.05 230;
 
-  /* Ink: a deep navy, never pure black. */
-  --c-ink: 20% 0.035 262;
-  --c-ink-2: 42% 0.025 260;
-  --c-ink-3: 55% 0.02 258;
+  /* Ink: cool chart-white. */
+  --c-ink: 95% 0.012 220;
+  --c-ink-2: 78% 0.025 225;
+  --c-ink-3: 62% 0.03 230;
 
-  /* The one UI accent: the red of the SFL mark. Actions and identity only. */
-  --c-signal: 58.6% 0.225 27.6;
-  --c-signal-deep: 50% 0.2 27;
+  /* Own ship, and every action. */
+  --c-signal: 80% 0.16 75;
+  --c-signal-deep: 72% 0.16 65;
 
-  /* Container paint. Illustration only, never UI chrome. */
-  --c-box-magenta: 60% 0.22 355;
-  --c-box-orange: 70% 0.175 48;
-  --c-box-cobalt: 47% 0.17 262;
-  --c-box-green: 56% 0.12 160;
-  --c-box-mustard: 80% 0.15 85;
-  --c-box-steel: 68% 0.025 250;
-  --c-box-red: 55% 0.19 27;
+  /* Charted linework: coast, soundings, the radar. */
+  --c-cyan: 84% 0.12 200;
+  /* The planned route. */
+  --c-route: 68% 0.26 345;
+  /* The SFL mark's own red, for identity only. */
+  --c-brand: 60% 0.22 27;
 
   /* Semantic state, used once: office open. */
-  --c-go: 60% 0.15 155;
+  --c-go: 78% 0.17 150;
 
-  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
-  --font-body: 'Onest', system-ui, sans-serif;
-  --font-mono: 'Martian Mono', ui-monospace, monospace;
+  --font-display: 'Big Shoulders Display', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
-  /* 4pt scale. */
-  --space-2xs: 0.25rem;
-  --space-xs: 0.5rem;
-  --space-sm: 0.75rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
-  --space-4xl: 6rem;
-  --space-5xl: 8rem;
-
-  --text-display: clamp(3rem, 7.4vw, 7.25rem);
-  --text-display-s: clamp(2.4rem, 5.4vw, 5rem);
-  --text-4xl: clamp(2rem, 3.8vw, 3.4rem);
-
-  /* Surfaces are square like steel; controls are pills. */
-  --radius-none: 0;
-  --radius-pill: 999px;
+  --text-mega: clamp(4rem, 13.5vw, 14rem);
+  --text-display: clamp(3.4rem, 9vw, 9rem);
+  --text-display-s: clamp(2.8rem, 6.4vw, 6.2rem);
+  --text-4xl: clamp(2.2rem, 4.4vw, 4rem);
 
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
   --dur-press: 140ms;
   --dur-hover: 220ms;
-  --dur-door: 560ms;
 }

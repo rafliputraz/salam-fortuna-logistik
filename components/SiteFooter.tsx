@@ -1,21 +1,15 @@
 'use client'
 
-import type { CSSProperties } from 'react'
-import { useRef } from 'react'
 import Image from 'next/image'
-import { COMPANY, NAV } from '@/lib/company'
-import { boxColor, type BoxColor } from '@/lib/containers'
-import { gsap, prefersReducedMotion, useGSAP } from '@/lib/motion'
-
-const TIER: Array<{ word: string; color: BoxColor }> = [
-  { word: 'Salam', color: 'cobalt' },
-  { word: 'Fortuna', color: 'magenta' },
-  { word: 'Logistik', color: 'orange' },
-]
+import { useRef } from 'react'
+import { COMPANY, CTA, NAV, telHref } from '@/lib/company'
+import { gsap, prefersReducedMotion, SplitText, useGSAP } from '@/lib/motion'
+import { ArrowRight } from './icons'
 
 /**
- * A statement footer: the company name stencilled across three boxes,
- * stacked the way they'd sit on a quay.
+ * The call band and the footer in one: the number set as big as a headline
+ * for anyone who would rather just call, then the name across the whole
+ * width, its letters rising off the waterline as the page runs out.
  */
 export default function SiteFooter() {
   const scope = useRef<HTMLElement>(null)
@@ -23,59 +17,77 @@ export default function SiteFooter() {
   useGSAP(
     () => {
       if (prefersReducedMotion()) return
-      gsap.utils.toArray<HTMLElement>('[data-word]', scope.current).forEach((el, i) => {
-        gsap.from(el, {
-          xPercent: i % 2 ? 60 : -60,
-          opacity: 0,
+      let split: SplitText | undefined
+      let cancelled = false
+      document.fonts?.ready.then(() => {
+        if (cancelled) return
+        split = SplitText.create(scope.current!.querySelector('[data-mark]'), { type: 'chars' })
+        gsap.from(split.chars, {
+          yPercent: 100,
           ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top bottom', end: 'top 70%', scrub: 0.6 },
+          stagger: 0.03,
+          scrollTrigger: { trigger: scope.current!.querySelector('[data-mark-wrap]'), start: 'top bottom', end: 'bottom bottom', scrub: 0.6 },
         })
       })
+      return () => {
+        cancelled = true
+        split?.revert()
+      }
     },
     { scope }
   )
 
   return (
-    <footer ref={scope} className="overflow-hidden bg-paper pt-20">
-      <div className="shell">
-        <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
-          <div className="flex items-center gap-4">
-            <Image src="/images/logo-sfl-nobg.png" alt="" width={120} height={40} className="h-10 w-auto" />
-            <div>
-              <p className="t-head text-xl text-ink">{COMPANY.legalName}</p>
-              <p className="mt-1 text-sm text-ink-2">{COMPANY.tagline}</p>
-            </div>
+    <footer ref={scope} className="relative overflow-hidden border-t border-line bg-paper">
+      {/* The call band. */}
+      <div className="shell py-20 md:py-28">
+        <p className="t-label text-cyan">Or skip the form</p>
+        <h2 data-split className="t-display mt-5 max-w-[16ch] text-[length:var(--text-4xl)] text-ink">
+          {CTA.headline}
+        </h2>
+        <p data-reveal className="mt-5 max-w-xl leading-relaxed text-ink-2">
+          {CTA.body}
+        </p>
+        <a data-reveal href={telHref} className="group mt-12 flex items-center justify-between gap-6 border-y border-line py-8">
+          <span className="t-display text-[clamp(2.6rem,9vw,9rem)] text-signal transition-colors duration-300 group-hover:text-ink">
+            {COMPANY.phone}
+          </span>
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center bg-signal text-paper transition-transform duration-300 ease-out group-hover:translate-x-1 group-active:scale-95 md:h-20 md:w-20">
+            <ArrowRight className="h-6 w-6" />
+          </span>
+        </a>
+      </div>
+
+      <div className="shell flex flex-col gap-10 pb-10 md:flex-row md:items-end md:justify-between">
+        <div className="flex items-center gap-4">
+          <Image src="/images/logo-sfl-nobg.png" alt="" width={120} height={40} className="h-10 w-auto" />
+          <div>
+            <p className="t-head text-2xl text-ink">{COMPANY.legalName}</p>
+            <p className="t-label mt-1 text-ink-3">{COMPANY.tagline}</p>
           </div>
-          <nav aria-label="Footer" className="flex flex-wrap gap-x-8 gap-y-3">
-            {NAV.map((item) => (
-              <a key={item.href} href={item.href} className="navlink">
-                {item.label}
-              </a>
-            ))}
-          </nav>
         </div>
-
-        <div aria-hidden="true" className="mt-14 flex flex-col items-start gap-2">
-          {TIER.map((t, i) => (
-            <p
-              key={t.word}
-              data-word
-              className="steel t-display px-4 py-1 text-[clamp(3rem,13vw,12rem)] leading-[0.95] text-paper md:px-8"
-              style={{ '--c': boxColor(t.color), '--rib': '18px', marginLeft: `${i * 6}%` } as CSSProperties}
-            >
-              {t.word}
-            </p>
+        <nav aria-label="Footer" className="flex flex-wrap gap-x-8 gap-y-3">
+          {NAV.map((item) => (
+            <a key={item.href} href={item.href} className="navlink">
+              {item.label}
+            </a>
           ))}
-        </div>
+        </nav>
+      </div>
 
-        <div className="mt-10 flex flex-col gap-2 border-t-2 border-ink/10 py-6 text-sm text-ink-2 sm:flex-row sm:justify-between">
-          <p>
-            &copy; {new Date().getFullYear()} {COMPANY.legalName}
-          </p>
-          <p className="t-label">
-            {COMPANY.basePort.code} {COMPANY.basePort.coords}
-          </p>
-        </div>
+      <div data-mark-wrap aria-hidden="true" className="overflow-hidden">
+        <p data-mark className="t-display t-outline whitespace-nowrap px-2 text-center text-[13.2vw] leading-[0.8]">
+          Salam Fortuna
+        </p>
+      </div>
+
+      <div className="shell flex flex-col gap-2 border-t border-line py-6 sm:flex-row sm:justify-between">
+        <p className="t-label text-ink-3">
+          © {new Date().getFullYear()} {COMPANY.legalName}
+        </p>
+        <p className="t-label text-ink-3">
+          {COMPANY.basePort.code} · {COMPANY.basePort.coords}
+        </p>
       </div>
     </footer>
   )
