@@ -33,7 +33,7 @@ Surfaces and containers are square, like steel. Controls are pills.
 
 ## Container photography
 Real container photos, cut out and recoloured per paint, live in
-`public/images/containers/{view}-{paint}.webp`. Use `containerSrc(view, paint)`
+`public/images/containers/{view}-{paint}.webp` (a redrawn view gets a `.v<n>` suffix via `REVISION`, so caches pick it up). Use `containerSrc(view, paint)`
 and `VIEWS` (intrinsic sizes) from `lib/containers.ts`. Views: `side`, `door`,
 `angled20`, `angled40`, `open`, `top20`, `hanging`. A hanging box's cables sit
 at 53.4% of its width; extend them with `cable.webp` tiled upward.
