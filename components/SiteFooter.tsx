@@ -1,7 +1,11 @@
+'use client'
+
 import type { CSSProperties } from 'react'
+import { useRef } from 'react'
 import Image from 'next/image'
 import { COMPANY, NAV } from '@/lib/company'
-import { boxColor, type BoxColor } from './Box'
+import { boxColor, type BoxColor } from '@/lib/containers'
+import { gsap, prefersReducedMotion, useGSAP } from '@/lib/motion'
 
 const TIER: Array<{ word: string; color: BoxColor }> = [
   { word: 'Salam', color: 'cobalt' },
@@ -14,8 +18,25 @@ const TIER: Array<{ word: string; color: BoxColor }> = [
  * stacked the way they'd sit on a quay.
  */
 export default function SiteFooter() {
+  const scope = useRef<HTMLElement>(null)
+
+  useGSAP(
+    () => {
+      if (prefersReducedMotion()) return
+      gsap.utils.toArray<HTMLElement>('[data-word]', scope.current).forEach((el, i) => {
+        gsap.from(el, {
+          xPercent: i % 2 ? 60 : -60,
+          opacity: 0,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top bottom', end: 'top 70%', scrub: 0.6 },
+        })
+      })
+    },
+    { scope }
+  )
+
   return (
-    <footer className="bg-paper pt-20">
+    <footer ref={scope} className="overflow-hidden bg-paper pt-20">
       <div className="shell">
         <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
           <div className="flex items-center gap-4">
@@ -38,6 +59,7 @@ export default function SiteFooter() {
           {TIER.map((t, i) => (
             <p
               key={t.word}
+              data-word
               className="steel t-display px-4 py-1 text-[clamp(3rem,13vw,12rem)] leading-[0.95] text-paper md:px-8"
               style={{ '--c': boxColor(t.color), '--rib': '18px', marginLeft: `${i * 6}%` } as CSSProperties}
             >

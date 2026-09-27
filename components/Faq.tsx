@@ -33,7 +33,7 @@ export default function Faq() {
       <div className="shell grid gap-12 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-4">
           <div className="lg:sticky lg:top-28">
-            <h2 data-reveal className="t-display text-[length:var(--text-4xl)] text-ink">
+            <h2 data-split className="t-display text-[length:var(--text-4xl)] text-ink">
               Before you ask us.
             </h2>
             <p data-reveal className="mt-5 max-w-sm leading-relaxed text-ink-2">

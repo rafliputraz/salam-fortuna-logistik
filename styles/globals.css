@@ -216,92 +216,6 @@
       linear-gradient(to bottom, rgb(0 0 0 / 0.25), transparent 8%, transparent 92%, rgb(0 0 0 / 0.3));
   }
 
-  /* ---- A container in CSS 3D ------------------------------------------
-     Sized from --u so a whole yard scales together. The box itself is a
-     zero-size anchor; each face is centred on it and pushed out to its side. */
-
-  .box3d {
-    --l: calc(var(--u) * 12);
-    --h: calc(var(--u) * 2.6);
-    --d: calc(var(--u) * 2.45);
-    --rib: calc(var(--u) * 0.42);
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 0;
-    height: 0;
-    transform-style: preserve-3d;
-  }
-
-  .box3d .box-body {
-    position: absolute;
-    transform-style: preserve-3d;
-  }
-
-  .box3d .face {
-    position: absolute;
-    left: 0;
-    top: 0;
-    backface-visibility: hidden;
-  }
-
-  .box3d .face-front,
-  .box3d .face-back {
-    width: var(--l);
-    height: var(--h);
-  }
-
-  .box3d .face-front {
-    transform: translate(-50%, -50%) translateZ(calc(var(--d) / 2));
-  }
-
-  .box3d .face-back {
-    transform: translate(-50%, -50%) rotateY(180deg) translateZ(calc(var(--d) / 2));
-    filter: brightness(0.72);
-  }
-
-  .box3d .face-end-r,
-  .box3d .face-end-l {
-    width: var(--d);
-    height: var(--h);
-  }
-
-  .box3d .face-end-r {
-    transform: translate(-50%, -50%) rotateY(90deg) translateZ(calc(var(--l) / 2));
-    filter: brightness(0.82);
-  }
-
-  .box3d .face-end-l {
-    transform: translate(-50%, -50%) rotateY(-90deg) translateZ(calc(var(--l) / 2));
-    filter: brightness(0.9);
-  }
-
-  .box3d .face-top {
-    width: var(--l);
-    height: var(--d);
-    transform: translate(-50%, -50%) rotateX(90deg) translateZ(calc(var(--h) / 2));
-    background-color: color-mix(in oklch, var(--c) 82%, white);
-    background-image: repeating-linear-gradient(90deg, rgb(0 0 0 / 0.08) 0 1px, transparent 1px calc(var(--u) * 1.2));
-  }
-
-  .box3d .face-label {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5em;
-    padding: 0 calc(var(--u) * 0.7);
-    color: rgb(255 255 255 / 0.95);
-    font-family: var(--font-mono);
-    font-size: calc(var(--u) * 0.62);
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    text-shadow: 0 1px 0 rgb(0 0 0 / 0.25);
-  }
-
   /* ---- Door cards -------------------------------------------------------
      A service card behind a pair of container doors. Hover, focus or a tap
      swings them open; the content is always in the DOM underneath. */
@@ -361,13 +275,45 @@
 
   /* ---- Reveal ---------------------------------------------------------- */
 
-  .js [data-reveal] {
+  .js [data-reveal],
+  .js [data-split] {
     opacity: 0;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .js [data-reveal] {
+    .js [data-reveal],
+    .js [data-split] {
       opacity: 1;
+    }
+  }
+
+  /* The doors crack open in turn when the wall first comes into view. */
+  .door-card.is-peek .door-leaf-l {
+    transform: rotateY(-38deg);
+  }
+
+  .door-card.is-peek .door-leaf-r {
+    transform: rotateY(38deg);
+  }
+
+  /* A load on a hook, for the small crane in the call band. */
+  @keyframes hang-swing {
+    from {
+      transform: rotate(-3deg);
+    }
+    to {
+      transform: rotate(3deg);
+    }
+  }
+
+  .hang-swing {
+    transform-origin: 53.4% -60%;
+    animation: hang-swing 2.6s ease-in-out infinite alternate;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hang-swing {
+      animation: none;
     }
   }
 }
@@ -382,6 +328,88 @@
 
   @media (prefers-reduced-motion: reduce) {
     .animate-\[sheet_220ms_var\(--ease-out\)\] {
+      animation: none;
+    }
+  }
+
+  /* ---- The sea in the agency block ------------------------------------- */
+
+  /* Swell lines drift sideways; each layer sets its own --swell-speed. */
+  @keyframes swell {
+    to {
+      background-position-x: var(--swell-dist, -640px);
+    }
+  }
+
+  .swell {
+    animation: swell var(--swell-speed, 20s) linear infinite;
+  }
+
+  .swell-reverse {
+    animation-direction: reverse;
+  }
+
+  /* A laden ship rides the swell: a slow heave with a touch of pitch. */
+  @keyframes ship-bob {
+    0%,
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    35% {
+      transform: translateY(-5px) rotate(-0.5deg);
+    }
+    70% {
+      transform: translateY(3px) rotate(0.35deg);
+    }
+  }
+
+  .ship-bob {
+    animation: ship-bob 6.5s ease-in-out infinite;
+    transform-origin: 50% 90%;
+  }
+
+  /* Churned water astern: foam that streams back and breathes. */
+  @keyframes foam {
+    to {
+      background-position-x: 180px, 110px, 0;
+    }
+  }
+
+  .wake {
+    border-radius: 999px 0 0 999px;
+    background:
+      radial-gradient(circle at 20% 50%, rgb(255 255 255 / 0.8) 0 2px, transparent 3px) 0 0 / 22px 12px,
+      radial-gradient(circle at 60% 40%, rgb(255 255 255 / 0.55) 0 3px, transparent 4px) 0 0 / 34px 16px,
+      linear-gradient(to left, rgb(255 255 255 / 0.75), rgb(255 255 255 / 0.25) 45%, transparent);
+    -webkit-mask-image: linear-gradient(to left, black, transparent);
+    mask-image: linear-gradient(to left, black, transparent);
+    animation: foam 1.6s linear infinite;
+  }
+
+  @keyframes bow-wave {
+    0%,
+    100% {
+      transform: scaleX(1) translateX(0);
+      opacity: 0.85;
+    }
+    50% {
+      transform: scaleX(1.25) translateX(6%);
+      opacity: 0.55;
+    }
+  }
+
+  .bow-wave {
+    border-radius: 0 999px 999px 0;
+    background: linear-gradient(to right, rgb(255 255 255 / 0.85), transparent);
+    transform-origin: left center;
+    animation: bow-wave 1.8s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .swell,
+    .ship-bob,
+    .wake,
+    .bow-wave {
       animation: none;
     }
   }

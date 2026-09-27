@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
-import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP } from '@/lib/motion'
+import { gsap, prefersReducedMotion, ScrollTrigger, SplitText, useGSAP } from '@/lib/motion'
 
 /**
  * One reveal behaviour for the whole page.
@@ -18,12 +18,31 @@ export default function Reveal({ children }: { children: React.ReactNode }) {
   useGSAP(
     () => {
       const targets = gsap.utils.toArray<HTMLElement>('[data-reveal]')
-      if (!targets.length) return
+      const headings = gsap.utils.toArray<HTMLElement>('[data-split]')
 
       if (prefersReducedMotion()) {
-        gsap.set(targets, { opacity: 1, y: 0 })
+        gsap.set([...targets, ...headings], { opacity: 1, y: 0 })
         return
       }
+
+      // Section headings rise into place a line at a time, once the webfont
+      // has settled where the lines break.
+      const splits: SplitText[] = []
+      document.fonts?.ready.then(() => {
+        headings.forEach((h) => {
+          const split = SplitText.create(h, { type: 'lines', mask: 'lines' })
+          splits.push(split)
+          gsap.set(h, { opacity: 1 })
+          gsap.from(split.lines, {
+            yPercent: 110,
+            duration: 1,
+            ease: 'power4.out',
+            stagger: 0.09,
+            scrollTrigger: { trigger: h, start: 'top 88%', once: true },
+            onComplete: () => split.revert(),
+          })
+        })
+      })
 
       gsap.set(targets, { opacity: 0, y: 24 })
 
@@ -64,6 +83,7 @@ export default function Reveal({ children }: { children: React.ReactNode }) {
       return () => {
         ro.disconnect()
         window.clearTimeout(timer)
+        splits.forEach((sp) => sp.revert())
       }
     },
     { scope }

@@ -1,9 +1,10 @@
 'use client'
 
 import type { CSSProperties } from 'react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { SERVICES } from '@/lib/company'
-import { boxColor } from './Box'
+import { boxColor } from '@/lib/containers'
+import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP } from '@/lib/motion'
 
 /** Card widths on the 12-column wall: wide and narrow alternate row to row. */
 const SPANS = ['lg:col-span-7', 'lg:col-span-5', 'lg:col-span-5', 'lg:col-span-7', 'lg:col-span-6', 'lg:col-span-6']
@@ -15,11 +16,33 @@ const SPANS = ['lg:col-span-7', 'lg:col-span-5', 'lg:col-span-5', 'lg:col-span-7
  * the doors are only paint.
  */
 export default function Services() {
+  const scope = useRef<HTMLElement>(null)
+
+  // The first time the wall comes into view, each pair of doors cracks open
+  // and shuts again in turn: a hint that they open, shown rather than told.
+  useGSAP(
+    () => {
+      if (prefersReducedMotion()) return
+      const cards = gsap.utils.toArray<HTMLElement>('.door-card', scope.current)
+      ScrollTrigger.create({
+        trigger: scope.current?.querySelector('ul'),
+        start: 'top 65%',
+        once: true,
+        onEnter: () =>
+          cards.forEach((card, i) => {
+            gsap.delayedCall(0.35 + i * 0.16, () => card.classList.add('is-peek'))
+            gsap.delayedCall(1.15 + i * 0.16, () => card.classList.remove('is-peek'))
+          }),
+      })
+    },
+    { scope }
+  )
+
   return (
-    <section id="services" className="bg-paper py-24 md:py-32">
+    <section ref={scope} id="services" className="bg-paper py-24 md:py-32">
       <div className="shell">
         <div className="max-w-3xl">
-          <h2 data-reveal className="t-display text-[length:var(--text-display-s)] text-ink">
+          <h2 data-split className="t-display text-[length:var(--text-display-s)] text-ink">
             Six doors. One team behind all of them.
           </h2>
           <p data-reveal className="mt-5 max-w-xl text-lg leading-relaxed text-ink-2">

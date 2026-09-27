@@ -4,7 +4,7 @@ import type { CSSProperties } from 'react'
 import { useRef } from 'react'
 import { PRINCIPLES, VISION } from '@/lib/company'
 import { gsap, prefersReducedMotion, useGSAP } from '@/lib/motion'
-import { boxColor, type BoxColor } from './Box'
+import { boxColor, type BoxColor } from '@/lib/containers'
 
 const COLORS: BoxColor[] = ['magenta', 'orange', 'green', 'cobalt']
 /** Where each card comes to rest, clear of the header, and how much of each stays showing. */
@@ -52,7 +52,7 @@ export default function Standards() {
   return (
     <section ref={scope} id="standards" className="bg-paper py-24 md:py-32">
       <div className="shell">
-        <h2 data-reveal className="t-display max-w-[14ch] text-[length:var(--text-display-s)] text-ink">
+        <h2 data-split className="t-display max-w-[14ch] text-[length:var(--text-display-s)] text-ink">
           Four promises you can hold us to.
         </h2>
 

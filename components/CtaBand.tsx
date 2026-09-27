@@ -1,4 +1,6 @@
+import Image from 'next/image'
 import { COMPANY, CTA, telHref } from '@/lib/company'
+import { containerSrc, VIEWS } from '@/lib/containers'
 import { ArrowRight } from './icons'
 
 /**
@@ -8,9 +10,16 @@ import { ArrowRight } from './icons'
  */
 export default function CtaBand() {
   return (
-    <section aria-labelledby="cta-heading" className="bg-signal-deep text-paper">
-      <div className="shell py-20 md:py-28">
-        <h2 id="cta-heading" data-reveal className="t-display max-w-[16ch] text-[length:var(--text-4xl)]">
+    <section aria-labelledby="cta-heading" className="relative overflow-hidden bg-signal-deep text-paper">
+      {/* A box on the hook, waiting on your call. */}
+      <div aria-hidden="true" className="absolute right-[6%] top-0 hidden w-[19rem] lg:block">
+        <div className="hang-swing">
+          <span className="absolute inset-x-0 bottom-[99%] h-40 bg-[url(/images/containers/cable.webp)] bg-[length:100%_auto] bg-repeat-y" />
+          <Image src={containerSrc('hanging', 'cobalt')} alt="" width={VIEWS.hanging.w} height={VIEWS.hanging.h} sizes="19rem" className="h-auto w-full" />
+        </div>
+      </div>
+      <div className="shell relative py-20 md:py-28">
+        <h2 id="cta-heading" data-split className="t-display max-w-[16ch] text-[length:var(--text-4xl)]">
           {CTA.headline}
         </h2>
         <p data-reveal className="mt-5 max-w-xl text-lg leading-relaxed text-paper/85">

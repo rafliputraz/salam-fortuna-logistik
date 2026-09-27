@@ -1,9 +1,10 @@
 'use client'
 
 import type { CSSProperties } from 'react'
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { COMPANY, PRIMARY_CTA, SERVICES, telHref } from '@/lib/company'
-import { boxColor } from './Box'
+import { boxColor } from '@/lib/containers'
+import { gsap, prefersReducedMotion, useGSAP } from '@/lib/motion'
 import { ArrowRight, Check, Mail, Phone, Pin } from './icons'
 
 const { address, hours } = COMPANY
@@ -20,6 +21,21 @@ type Errors = Partial<Record<'name' | 'email' | 'details', string>>
 export default function Contact() {
   const [errors, setErrors] = useState<Errors>({})
   const [sent, setSent] = useState(false)
+  const scope = useRef<HTMLElement>(null)
+
+  // The desk's stamp comes down on the label as it arrives, with a small
+  // jolt through the card, like a real one.
+  useGSAP(
+    () => {
+      if (prefersReducedMotion()) return
+      const q = gsap.utils.selector(scope)
+      gsap
+        .timeline({ scrollTrigger: { trigger: q('form')[0], start: 'top 60%', once: true } })
+        .fromTo(q('[data-stamp]'), { scale: 2.4, opacity: 0, rotate: -30 }, { scale: 1, opacity: 0.9, rotate: -12, duration: 0.32, ease: 'power4.in' }, 0.4)
+        .to(q('form'), { y: 4, duration: 0.07, yoyo: true, repeat: 1, ease: 'power1.out' }, '>-0.02')
+    },
+    { scope }
+  )
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -51,10 +67,10 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="bg-paper py-24 md:py-32">
+    <section ref={scope} id="contact" className="bg-paper py-24 md:py-32">
       <div className="shell grid gap-14 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-5">
-          <h2 data-reveal className="t-display text-[length:var(--text-display-s)] text-ink">
+          <h2 data-split className="t-display text-[length:var(--text-display-s)] text-ink">
             Tell us what&apos;s moving.
           </h2>
           <p data-reveal className="mt-5 max-w-md text-lg leading-relaxed text-ink-2">
@@ -95,8 +111,17 @@ export default function Contact() {
             data-reveal
             noValidate
             onSubmit={handleSubmit}
-            className="rotate-[-0.6deg] border-[3px] border-ink bg-paper shadow-[10px_10px_0_oklch(var(--c-ink))] transition-transform duration-300 ease-out focus-within:rotate-0"
+            className="relative rotate-[-0.6deg] border-[3px] border-ink bg-paper shadow-[10px_10px_0_oklch(var(--c-ink))] transition-transform duration-300 ease-out focus-within:rotate-0"
           >
+            <span
+              data-stamp
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-3 top-14 z-10 flex h-28 w-28 rotate-[-12deg] flex-col items-center justify-center rounded-full border-[3px] border-signal text-signal opacity-90 md:-right-6"
+            >
+              <span className="t-label text-[0.6rem]">Salam Fortuna</span>
+              <span className="t-display text-[1.6rem] leading-none">IDPNJ</span>
+              <span className="t-label text-[0.6rem]">Panjang</span>
+            </span>
             <div className="flex items-stretch justify-between border-b-[3px] border-ink">
               <p className="t-display px-6 py-4 text-[2rem] text-ink">Booking label</p>
               <p className="t-label flex items-center bg-ink px-5 text-paper">To {COMPANY.basePort.code}</p>

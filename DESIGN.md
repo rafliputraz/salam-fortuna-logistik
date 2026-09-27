@@ -30,15 +30,28 @@ Surfaces and containers are square, like steel. Controls are pills.
 ## Paint utilities
 - `.steel`: corrugated side of a box in `--c` (rib pitch `--rib`).
 - `.steel-door`: a door end with seam and locking bars.
-- `Box` (components/Box.tsx): a 40ft container in CSS 3D, sized by `--u`.
+
+## Container photography
+Real container photos, cut out and recoloured per paint, live in
+`public/images/containers/{view}-{paint}.webp`. Use `containerSrc(view, paint)`
+and `VIEWS` (intrinsic sizes) from `lib/containers.ts`. Views: `side`, `door`,
+`angled20`, `angled40`, `open`, `top20`, `hanging`. A hanging box's cables sit
+at 53.4% of its width; extend them with `cable.webp` tiled upward.
 
 ## Motion
-- Hero: the stack is set down tier by tier on load; on scroll it pins, turns
-  ~70 degrees and opens into its tiers; it leans toward the mouse.
+- Hero: a stack of photographed boxes is set down tier by tier on load, the
+  tiers lift apart as you scroll away, and they shift in depth under the mouse.
+- Section headings rise in by the line (`data-split`); body content fades up
+  (`data-reveal`).
 - Port train: the page's one marquee, velocity-reactive.
-- Journey: pins on desktop; one box turns a quarter and repaints per leg.
-- Services: container doors swing open on hover, focus or tap.
-- Agency: the real ship photo sails across on scroll over drifting swell lines.
+- Journey: a box hangs from a crane, always swinging gently. It is lowered in
+  as the section arrives; on desktop the section pins and, per leg, the crane
+  hoists and slews it while it takes that leg's paint.
+- Services: container doors swing open on hover, focus or tap, and peek open
+  once in sequence when the wall first scrolls in.
+- Agency: the real ship photo sails left to right on scroll over drifting swell.
+- Contact: a rubber stamp lands on the booking label. CTA: a box swings on a hook.
+- Footer: the wordmark boxes slide in from alternate sides.
 - Promises: cards stack as sticky tiers.
 - Every scroll effect has a reduced-motion path (no pins; doors fade).
 - `Reveal` re-measures all triggers when the page height changes.

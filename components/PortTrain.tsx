@@ -1,12 +1,12 @@
 'use client'
 
-import type { CSSProperties } from 'react'
+import Image from 'next/image'
 import { useRef } from 'react'
 import { PORTS } from '@/lib/company'
 import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP } from '@/lib/motion'
-import { boxColor, type BoxColor } from './Box'
+import { containerSrc, type Paint, VIEWS } from '@/lib/containers'
 
-const COLORS: BoxColor[] = ['cobalt', 'magenta', 'orange', 'green', 'red', 'mustard', 'steel']
+const COLORS: Paint[] = ['cobalt', 'magenta', 'orange', 'green', 'red', 'mustard', 'steel']
 
 /**
  * The gateways we move cargo through, painted on a train of boxes rolling
@@ -51,12 +51,20 @@ export default function PortTrain() {
               aria-hidden={i >= PORTS.length}
               className="mr-3 flex w-[15rem] shrink-0 flex-col md:w-[19rem]"
             >
-              <div
-                className="steel flex h-[6.5rem] flex-col justify-between px-4 py-3 text-paper md:h-[8rem]"
-                style={{ '--c': boxColor(COLORS[i % COLORS.length]), '--rib': '11px' } as CSSProperties}
-              >
-                <span className="t-label opacity-85">{port.code}</span>
-                <span className="t-head text-[1.7rem] md:text-[2.1rem]">{port.name}</span>
+              <div className="relative">
+                <Image
+                  src={containerSrc('side', COLORS[i % COLORS.length])}
+                  alt=""
+                  width={VIEWS.side.w}
+                  height={VIEWS.side.h}
+                  sizes="19rem"
+                  className="h-auto w-full"
+                />
+                {/* A placard on the side, the way a box carries its markings. */}
+                <span className="absolute left-[7%] top-[16%] bg-paper/95 px-2.5 py-1.5 shadow-sm">
+                  <span className="t-label block text-[0.62rem] text-ink-2">{port.code}</span>
+                  <span className="t-head block text-[1.2rem] text-ink md:text-[1.45rem]">{port.name}</span>
+                </span>
               </div>
               {/* Flatcar and bogies. */}
               <div aria-hidden="true" className="relative h-4">
