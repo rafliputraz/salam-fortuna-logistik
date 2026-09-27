@@ -3,10 +3,13 @@ import Agency from '@/components/Agency'
 import Contact from '@/components/Contact'
 import Faq from '@/components/Faq'
 import Hero from '@/components/Hero'
+import Magnetic from '@/components/Magnetic'
 import Network from '@/components/Network'
+import PortStrip from '@/components/PortStrip'
 import Process from '@/components/Process'
 import Reveal from '@/components/Reveal'
 import Services from '@/components/Services'
+import ShipCross from '@/components/ShipCross'
 import SiteFooter from '@/components/SiteFooter'
 import SiteHeader from '@/components/SiteHeader'
 import Standards from '@/components/Standards'
@@ -44,7 +47,9 @@ export default function Home() {
       <Reveal>
         <main id="main" tabIndex={-1}>
           <Hero />
+          <PortStrip />
           <Statement />
+          <ShipCross />
           <Services />
           <Process />
           <Network />
@@ -55,6 +60,7 @@ export default function Home() {
         </main>
         <SiteFooter />
       </Reveal>
+      <Magnetic />
     </>
   )
 }

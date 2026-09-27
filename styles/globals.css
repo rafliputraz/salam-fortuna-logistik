@@ -98,6 +98,8 @@
 
   .btn {
     @apply inline-flex select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-full px-6 py-3.5 text-[0.95rem] font-semibold;
+    /* Magnetic pull, kept off `transform` so the press scale still applies. */
+    translate: var(--mx, 0px) var(--my, 0px);
     transition:
       transform 140ms var(--ease-out),
       background-color 200ms ease,

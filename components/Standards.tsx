@@ -6,15 +6,19 @@ import { gsap, prefersReducedMotion, useGSAP } from '@/lib/motion'
 
 /**
  * Four promises as numbered cards, with a red rule that draws across the
- * top of each as it arrives, then the vision set as a pull quote.
+ * top of each as it arrives, then the vision set as a pull quote that
+ * lights up word by word as it scrolls through.
  */
 export default function Standards() {
   const scope = useRef<HTMLElement>(null)
 
   useGSAP(
     () => {
-      if (prefersReducedMotion()) return
       const q = gsap.utils.selector(scope)
+      if (prefersReducedMotion()) {
+        gsap.set(q('[data-vw]'), { opacity: 1 })
+        return
+      }
       gsap.from(q('[data-rule]'), {
         scaleX: 0,
         transformOrigin: 'left',
@@ -22,6 +26,12 @@ export default function Standards() {
         stagger: 0.12,
         ease: 'power3.inOut',
         scrollTrigger: { trigger: q('[data-grid]')[0], start: 'top 80%', once: true },
+      })
+      gsap.to(q('[data-vw]'), {
+        opacity: 1,
+        stagger: 0.05,
+        ease: 'none',
+        scrollTrigger: { trigger: q('[data-vision]')[0], start: 'top 75%', end: 'bottom 55%', scrub: true },
       })
     },
     { scope }
@@ -51,8 +61,12 @@ export default function Standards() {
 
         <figure data-reveal className="mt-24 rounded-[2rem] bg-paper-2 px-8 py-14 md:px-16 md:py-20">
           <p className="text-sm font-semibold uppercase tracking-[0.12em] text-ink-3">Our vision</p>
-          <blockquote className="t-h2 mt-6 max-w-5xl !font-semibold text-ink">
-            “{VISION}”
+          <blockquote data-vision className="t-h2 mt-6 max-w-5xl !font-semibold text-ink">
+            {`“${VISION}”`.split(' ').map((w, i) => (
+              <span key={i} data-vw className="opacity-20">
+                {w}{' '}
+              </span>
+            ))}
           </blockquote>
         </figure>
       </div>

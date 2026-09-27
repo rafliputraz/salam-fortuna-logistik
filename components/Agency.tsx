@@ -9,7 +9,8 @@ import { Check } from './icons'
 /**
  * Ship agency, on the one deep navy band. The photograph opens from a
  * narrow frame to full as it scrolls into view and keeps drifting inside
- * it; the four things we handle for the master sit beside it.
+ * it; the four things we handle for the master rise in beneath, and two
+ * lines of big type slide against each other as the band scrolls out.
  */
 export default function Agency() {
   const scope = useRef<HTMLElement>(null)
@@ -28,6 +29,17 @@ export default function Agency() {
         { scale: 1.2, yPercent: -6 },
         { scale: 1.05, yPercent: 6, ease: 'none', scrollTrigger: { trigger: q('[data-frame]')[0], start: 'top bottom', end: 'bottom top', scrub: true } }
       )
+      // The scope of the call, in big type, running against each other.
+      q('[data-run]').forEach((row, i) => {
+        gsap.fromTo(
+          row,
+          { xPercent: i % 2 ? -30 : 0 },
+          { xPercent: i % 2 ? 0 : -30, ease: 'none', scrollTrigger: { trigger: q('[data-runs]')[0], start: 'top bottom', end: 'bottom top', scrub: true } }
+        )
+      })
+      q('[data-husb]').forEach((card, i) => {
+        gsap.from(card, { opacity: 0, y: 50, duration: 0.9, delay: i * 0.1, ease: 'power3.out', scrollTrigger: { trigger: q('[data-husb-grid]')[0], start: 'top 85%', once: true } })
+      })
     },
     { scope }
   )
@@ -64,9 +76,9 @@ export default function Agency() {
           </p>
         </div>
 
-        <dl className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <dl data-husb-grid className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {HUSBANDRY.map((h) => (
-            <div key={h.title} data-reveal className="rounded-3xl bg-deep-2 p-7 ring-1 ring-inset ring-white/10 transition-colors duration-300 hover:bg-white/10">
+            <div key={h.title} data-husb className="rounded-3xl bg-deep-2 p-7 ring-1 ring-inset ring-white/10 transition-colors duration-300 hover:bg-white/10">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-sky/15 text-sky">
                 <Check className="h-5 w-5" />
               </span>
@@ -76,6 +88,23 @@ export default function Agency() {
           ))}
         </dl>
       </div>
+
+      <div data-runs aria-hidden="true" className="mt-20 space-y-2 overflow-hidden md:mt-28">
+        {[RUN_A, RUN_B].map((run, i) => (
+          <p
+            key={i}
+            data-run
+            className={`whitespace-nowrap text-[clamp(3rem,8vw,7.5rem)] font-extrabold leading-none tracking-[-0.04em] ${
+              i ? 'text-white/10' : 'text-transparent [-webkit-text-stroke:1.5px_rgb(255_255_255/0.25)]'
+            }`}
+          >
+            {run} {run}
+          </p>
+        ))}
+      </div>
     </section>
   )
 }
+
+const RUN_A = 'Port clearance · Crew change · Cash to master ·'
+const RUN_B = 'Bunkers & stores · Fresh water · Owner’s protective ·'

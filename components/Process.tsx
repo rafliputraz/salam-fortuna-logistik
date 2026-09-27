@@ -7,8 +7,8 @@ import { LEG_ICONS } from './icons'
 
 /**
  * How a shipment moves, as five steps. The step list on the left stays put
- * while the cards scroll past on the right; the step in view lights up and
- * a red rule fills down the list as you go.
+ * while the cards on the right stack up as you scroll, each sliding over
+ * the last; the step in view lights up and a red rule fills down the list.
  */
 export default function Process() {
   const scope = useRef<HTMLElement>(null)
@@ -34,9 +34,24 @@ export default function Process() {
         { scaleY: 0 },
         { scaleY: 1, ease: 'none', scrollTrigger: { trigger: q('[data-steps]')[0], start: 'top 55%', end: 'bottom 55%', scrub: true } }
       )
-      cards.forEach((card) =>
-        gsap.from(card, { opacity: 0.35, scale: 0.97, ease: 'power2.out', scrollTrigger: { trigger: card, start: 'top 85%', end: 'top 55%', scrub: true } })
-      )
+      // On a wide screen the cards stack: each one pins a little lower than
+      // the last, and the one beneath shrinks back and dims as the next
+      // slides over it.
+      const mm = gsap.matchMedia(scope.current!)
+      mm.add('(min-width: 1024px)', () => {
+        cards.slice(0, -1).forEach((card, i) => {
+          // Shaded with an opaque layer, not card opacity, so the card
+          // underneath never shows through.
+          const st = { trigger: cards[i + 1], start: 'top 85%', end: () => `top ${140 + (i + 1) * 22}px`, scrub: true }
+          gsap.to(card, { scale: 0.92, transformOrigin: '50% 0%', ease: 'none', scrollTrigger: st })
+          gsap.to(card.querySelector('[data-shade]'), { opacity: 0.7, ease: 'none', scrollTrigger: st })
+        })
+      })
+      mm.add('(max-width: 1023px)', () => {
+        cards.forEach((card) =>
+          gsap.from(card, { opacity: 0, y: 40, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: card, start: 'top 88%', once: true } })
+        )
+      })
     },
     { scope }
   )
@@ -70,11 +85,17 @@ export default function Process() {
           </div>
         </div>
 
-        <ol data-steps className="space-y-5 lg:col-span-7">
+        <ol data-steps className="space-y-5 lg:col-span-7 lg:space-y-[40vh] lg:pb-[10vh]">
           {VOYAGE.map((leg, i) => {
             const Icon = LEG_ICONS[leg.code]
             return (
-              <li key={leg.code} data-step className="card p-8 md:p-10">
+              <li
+                key={leg.code}
+                data-step
+                className="card relative p-8 md:p-10 lg:sticky"
+                style={{ top: `${140 + i * 22}px` }}
+              >
+                <span data-shade aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 rounded-3xl bg-paper-3 opacity-0" />
                 <div className="flex items-center justify-between">
                   <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-signal/10 text-signal">
                     <Icon className="h-6 w-6" />

@@ -34,21 +34,28 @@ Rounded: cards `rounded-3xl`, photo frames `2rem`, buttons and chips pills.
 (services lead card, ship agency).
 
 ## Motion
-Restrained and smooth; nothing loops loudly.
-- Hero: headline rises by line, the photo unmasks from an inset frame and
-  settles from 1.25x, two glass cards float in; the shipment card ticks
-  through its five stages. Photo drifts on scroll.
-- Statement: the sentence brightens word by word on scroll; figures
-  (counted from the site's own data) count up once.
-- Services: bento cards fade up and lift on hover; the lead photo zooms.
-- Process: sticky step list, active step follows the card in view, a red
-  rule fills down the list.
-- Coverage: map drawn from Natural Earth coastline (`lib/chart-data.ts`,
-  generated, do not edit); routes draw in and keep flowing, ports pop,
-  hovering a port lights it on the map.
-- Ship agency: photo opens from an inset frame to full width on scroll.
-- Standards: red rules draw across each promise.
-- Footer: the call card rises and settles as it arrives.
+Smooth and purposeful; loops stay quiet, scroll moments carry the energy.
+- Global: Lenis smooth scroll; section headings rise by line; magnetic
+  buttons (`Magnetic`, via the `translate` property so press scale still
+  works); red scroll-progress rule on the header.
+- Hero: headline rises by line, the photo unmasks and settles, then leans
+  toward the mouse with the floating cards moving further (depth); the
+  badge rolls through the services; the shipment card steps through its
+  five stages on a loop; a dotted route with a ship runs along the foot.
+- Port strip: marquee of gateways that speeds up and turns with scroll.
+- Statement: brightens word by word; figures count up from the site's data.
+- Ship crossing (`ShipCross`): pinned on desktop; the ship sails left to
+  right across outlined type that fills solid behind her.
+- Services: cards rise tilted back in turn; under a mouse they tip toward
+  the pointer with a light following it; the lead photo zooms on hover.
+- Process: sticky step list with a filling rule; cards stack on desktop,
+  each lower card scaling back under an opaque shade.
+- Coverage: routes draw in and flow, ships sail every route, ports pop,
+  hover-linked port list, the map drifts on scroll.
+- Ship agency: photo opens to full width; husbandry cards rise; two lines
+  of big type slide against each other.
+- Standards: red rules draw in; the vision lights word by word.
+- Footer: the call card rises and settles.
 - Every effect has a reduced-motion path.
 
 Other directions: `main` (daylight container yard) and

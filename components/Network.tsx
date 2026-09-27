@@ -11,9 +11,9 @@ const VIEW = { x: 120, y: 120, w: 2200, h: 1380 }
 
 /**
  * Coverage. A light map of the waters we work, drawn from Natural Earth
- * coastline: the routes into Panjang draw themselves in and keep flowing,
- * the gateways pop up, and pointing at a port in the list lights it on the
- * map.
+ * coastline: the routes into Panjang draw themselves in and keep flowing
+ * with ships working them, the gateways pop up, and pointing at a port in
+ * the list lights it on the map.
  */
 export default function Network() {
   const scope = useRef<HTMLElement>(null)
@@ -28,6 +28,22 @@ export default function Network() {
         .from(q('[data-land]'), { opacity: 0, duration: 1 })
         .from(q('[data-route]'), { drawSVG: '0%', duration: 1.6, stagger: 0.15, ease: 'power2.inOut' }, 0.2)
         .from(q('[data-dot]'), { scale: 0, transformOrigin: 'center', duration: 0.5, stagger: 0.06, ease: 'back.out(2.5)' }, 0.8)
+        .from(q('[data-mship]'), { opacity: 0, duration: 0.6 }, 1.6)
+
+      // Ships working every route, inbound, each at her own pace.
+      q<SVGGElement>('[data-mship]').forEach((ship, i) => {
+        const path = scope.current!.querySelector<SVGPathElement>(`#net-${ship.dataset.mship}`)!
+        gsap.to(ship, {
+          motionPath: { path, align: path, alignOrigin: [0.5, 0.5], autoRotate: true },
+          duration: 9 + path.getTotalLength() / 90,
+          repeat: -1,
+          ease: 'none',
+          delay: -i * 3.5,
+        })
+      })
+
+      // The map drifts a touch as the section scrolls by.
+      gsap.fromTo(q('[data-map] svg'), { yPercent: 3 }, { yPercent: -3, ease: 'none', scrollTrigger: { trigger: scope.current, start: 'top bottom', end: 'bottom top', scrub: true } })
     },
     { scope }
   )
@@ -68,8 +84,14 @@ export default function Network() {
             <path data-land d={LAND} className="fill-ink/[0.08] stroke-ink/25" strokeWidth={1} vectorEffect="non-scaling-stroke" />
             {Object.entries(LANES).map(([k, pts]) => (
               <g key={k}>
-                <path data-route d={toPath(pts)} fill="none" className="stroke-signal/25" strokeWidth={6} strokeLinecap="round" />
+                <path id={`net-${k}`} data-route d={toPath(pts)} fill="none" className="stroke-signal/25" strokeWidth={6} strokeLinecap="round" />
                 <path d={toPath(pts)} fill="none" className="route-flow stroke-signal" strokeWidth={2.5} vectorEffect="non-scaling-stroke" />
+              </g>
+            ))}
+            {Object.keys(LANES).map((k) => (
+              <g key={k} data-mship={k} className="motion-reduce:hidden">
+                <circle r={18} className="fill-signal/15" />
+                <path d="M14 0 L-10 -8 L-5 0 L-10 8 Z" className="fill-signal" />
               </g>
             ))}
             {Object.entries(PORT_XY)

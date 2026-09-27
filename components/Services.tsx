@@ -1,7 +1,9 @@
 'use client'
 
 import Image from 'next/image'
+import { useRef, type PointerEvent as ReactPointerEvent } from 'react'
 import { SERVICES } from '@/lib/company'
+import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP } from '@/lib/motion'
 import { Anchor, ArrowRight, Boxes, Doc, Ship, Slot, Truck } from './icons'
 
 const ICONS = [Ship, Doc, Truck, Anchor, Boxes, Slot]
@@ -9,11 +11,45 @@ const ICONS = [Ship, Doc, Truck, Anchor, Boxes, Slot]
 /**
  * Services as a bento grid. Sea freight leads, on the photograph of a ship
  * underway; ship agency sits on the deep navy; the rest are plain cards.
- * Every card lifts a little under the pointer.
+ * They rise into place tilted back, in turn. Under a mouse each card tips
+ * toward the pointer and a soft light follows it across the surface.
  */
 export default function Services() {
+  const scope = useRef<HTMLElement>(null)
+
+  useGSAP(
+    () => {
+      if (prefersReducedMotion()) return
+      const cards = gsap.utils.toArray<HTMLElement>('[data-svc]', scope.current)
+      gsap.set(cards, { opacity: 0, y: 70, rotationX: 14, transformPerspective: 1200, transformOrigin: '50% 100%' })
+      ScrollTrigger.batch(cards, {
+        start: 'top 88%',
+        once: true,
+        onEnter: (batch) =>
+          gsap.to(batch, { opacity: 1, y: 0, rotationX: 0, duration: 1.1, stagger: 0.1, ease: 'power3.out', clearProps: 'transform' }),
+      })
+    },
+    { scope }
+  )
+
+  const onMove = (e: ReactPointerEvent<HTMLElement>) => {
+    if (e.pointerType !== 'mouse') return
+    const el = e.currentTarget
+    const r = el.getBoundingClientRect()
+    const x = (e.clientX - r.left) / r.width
+    const y = (e.clientY - r.top) / r.height
+    el.style.setProperty('--mx', `${x * 100}%`)
+    el.style.setProperty('--my', `${y * 100}%`)
+    el.style.setProperty('--ry', `${(x - 0.5) * 6}deg`)
+    el.style.setProperty('--rx', `${(0.5 - y) * 6}deg`)
+  }
+  const onLeave = (e: ReactPointerEvent<HTMLElement>) => {
+    e.currentTarget.style.setProperty('--ry', '0deg')
+    e.currentTarget.style.setProperty('--rx', '0deg')
+  }
+
   return (
-    <section id="services" className="bg-paper-2 py-24 md:py-32">
+    <section ref={scope} id="services" className="bg-paper-2 py-24 md:py-32">
       <div className="shell">
         <div className="flex flex-wrap items-end justify-between gap-8">
           <div className="max-w-2xl">
@@ -36,8 +72,10 @@ export default function Services() {
             return (
               <li
                 key={s.title}
-                data-reveal
-                className={`group relative flex flex-col overflow-hidden rounded-3xl p-7 transition-[transform,box-shadow] duration-500 ease-[var(--ease-out)] hover:-translate-y-1 md:p-8 ${
+                data-svc
+                onPointerMove={onMove}
+                onPointerLeave={onLeave}
+                className={`group relative flex flex-col overflow-hidden rounded-3xl p-7 transition-[transform,box-shadow] duration-500 ease-[var(--ease-out)] [transform:perspective(1000px)_rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))] hover:[transform:perspective(1000px)_rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))_translateY(-4px)] md:p-8 ${
                   lead
                     ? 'min-h-[26rem] text-white md:col-span-2 lg:row-span-2'
                     : dark
@@ -57,6 +95,15 @@ export default function Services() {
                     <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-deep/90 via-deep/30 to-transparent" />
                   </>
                 )}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 z-[1] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{
+                    background: `radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), ${
+                      lead || dark ? 'rgb(255 255 255 / 0.14)' : 'oklch(var(--c-signal) / 0.07)'
+                    }, transparent 65%)`,
+                  }}
+                />
                 <div className="relative flex items-start justify-between">
                   <span
                     className={`flex h-12 w-12 items-center justify-center rounded-2xl ${

@@ -1,20 +1,26 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { COMPANY, NAV, PRIMARY_CTA } from '@/lib/company'
 import { ArrowRight, Close, Menu } from './icons'
 
 /**
  * A plain bar: mark, nav, one action. Clear over the hero, it takes on a
- * frosted ground and a hairline once the page is scrolled.
+ * frosted ground once the page is scrolled, and a red rule along its foot
+ * shows how far down you are.
  */
 export default function SiteHeader() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const bar = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12)
+    const onScroll = () => {
+      setScrolled(window.scrollY > 12)
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      if (bar.current) bar.current.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -65,6 +71,9 @@ export default function SiteHeader() {
           {open ? <Close className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
+
+      {/* How far down the page, as a red hairline along the bar's foot. */}
+      <span ref={bar} aria-hidden="true" className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-signal" style={{ transform: 'scaleX(0)' }} />
 
       <div id="mobile-nav" hidden={!open} className="border-t border-line lg:hidden">
         <nav className="shell flex flex-col py-4" aria-label="Primary, mobile">
