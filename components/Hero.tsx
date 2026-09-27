@@ -50,9 +50,11 @@ export default function Hero() {
         .from(tiers, { y: -520, opacity: 0, duration: 0.85, ease: 'back.out(1.2)', stagger: 0.22 })
         .from(tags, { opacity: 0, x: -14, scale: 0.9, duration: 0.45, ease: 'back.out(2)', stagger: 0.1 }, '-=0.35')
 
-      // Scrolling away, the tiers lift apart, the higher ones faster.
-      tiers.forEach((tier, i) => {
-        gsap.to(tier, {
+      // Scrolling away, the tiers lift apart, the higher ones faster. This
+      // runs on its own wrapper: sharing `y` with the drop-in above would let
+      // the scrub capture a mid-drop position and hold the stack up there.
+      q('[data-lift]').forEach((lift, i) => {
+        gsap.to(lift, {
           y: -i * 46,
           x: (i % 2 ? 1 : -1) * i * 10,
           ease: 'none',
@@ -131,23 +133,25 @@ export default function Hero() {
                     zIndex: i,
                   }}
                 >
-                  <div data-depth className="relative">
-                    <Image
-                      src={containerSrc(t.view, t.paint)}
-                      alt=""
-                      width={v.w}
-                      height={v.h}
-                      priority={i < 2}
-                      sizes="(max-width: 768px) 80vw, 30rem"
-                      className="h-auto w-full drop-shadow-[0_10px_12px_oklch(var(--c-ink)/0.25)]"
-                    />
-                    <span
-                      data-tag
-                      className="absolute left-[92%] top-[38%] flex items-center gap-2 whitespace-nowrap"
-                    >
-                      <span className="h-[2px] w-6 bg-ink/40 md:w-10" />
-                      <span className="t-label rounded-full bg-ink px-3 py-1.5 text-paper">{t.tag}</span>
-                    </span>
+                  <div data-lift>
+                    <div data-depth className="relative">
+                      <Image
+                        src={containerSrc(t.view, t.paint)}
+                        alt=""
+                        width={v.w}
+                        height={v.h}
+                        priority={i < 2}
+                        sizes="(max-width: 768px) 80vw, 30rem"
+                        className="h-auto w-full drop-shadow-[0_10px_12px_oklch(var(--c-ink)/0.25)]"
+                      />
+                      <span
+                        data-tag
+                        className="absolute left-[92%] top-[38%] flex items-center gap-2 whitespace-nowrap"
+                      >
+                        <span className="h-[2px] w-6 bg-ink/40 md:w-10" />
+                        <span className="t-label rounded-full bg-ink px-3 py-1.5 text-paper">{t.tag}</span>
+                      </span>
+                    </div>
                   </div>
                 </div>
               )
