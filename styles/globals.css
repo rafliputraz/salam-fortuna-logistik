@@ -241,6 +241,13 @@
     animation: dash 1.6s linear infinite;
   }
 
+  /* Light on the water sliding toward the viewer; 140px is ten line repeats. */
+  @keyframes glint {
+    to {
+      background-position: 0 140px;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .float,
     .ping-soft,

@@ -30,8 +30,8 @@ Rounded: cards `rounded-3xl`, photo frames `2rem`, buttons and chips pills.
 `.card` is white with a hairline border and a soft two-layer shadow.
 
 ## Photography
-`public/images/photos/terminal.webp` (hero), `ship-head-on.webp` (ship
-approach) and `ship-at-sea.webp` (services lead card, ship agency).
+`public/images/photos/terminal.webp` (hero), `ship-head-on-cut.webp` (cut
+out, ship approach) and `ship-at-sea.webp` (services lead card, ship agency).
 
 ## Motion
 Smooth and purposeful; loops stay quiet, scroll moments carry the energy.
@@ -44,10 +44,11 @@ Smooth and purposeful; loops stay quiet, scroll moments carry the energy.
   five stages on a loop; a dotted route with a ship runs along the foot.
 - Port strip: marquee of gateways that speeds up and turns with scroll.
 - Statement: brightens word by word; figures count up from the site's data.
-- Ship approach (`ShipCross`): pinned; the head-on ship photo starts as a
-  small hazy frame on the horizon under the headline, grows and rises to
-  fill the screen, then keeps closing bow first; the headline turns white
-  over her and swells away as she sails through it.
+- Ship approach (`ShipCross`): pinned dusk seascape. The ship, cut out of
+  her photograph, sits tiny on the horizon under the headline, always
+  creeping closer on her own and rolling gently; scrolling brings her on,
+  growing and dropping down the screen as she nears, haze clearing, until
+  she rises over the headline and her bow fills the view.
 - Services: cards rise tilted back in turn; under a mouse they tip toward
   the pointer with a light following it; the lead photo zooms on hover.
 - Process: sticky step list with a filling rule; cards stack on desktop,
