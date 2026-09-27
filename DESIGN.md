@@ -48,7 +48,8 @@ Smooth and purposeful; loops stay quiet, scroll moments carry the energy.
   her photograph, sits tiny on the horizon under the headline, always
   creeping closer on her own and rolling gently; scrolling brings her on,
   growing and dropping down the screen as she nears, haze clearing, until
-  she rises over the headline and her bow fills the view.
+  she stands close under the headline, which stays in front of her, and
+  the caption comes up.
 - Services: cards rise tilted back in turn; under a mouse they tip toward
   the pointer with a light following it; the lead photo zooms on hover.
 - Process: sticky step list with a filling rule; cards stack on desktop,

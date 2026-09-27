@@ -12,8 +12,8 @@ const HORIZON = 0.58
  * cut out of her photograph, far off on the horizon. She is always making
  * way toward you, creeping closer on her own and rocking gently; scrolling
  * brings her on, growing and dropping down the screen the way a ship does
- * as she nears, the haze of distance clearing, until she rises over the
- * headline and her bow fills the view.
+ * as she nears, the haze of distance clearing, until she stands close under
+ * the headline, which stays in front of her, and the caption comes up.
  */
 export default function ShipCross() {
   const scope = useRef<HTMLElement>(null)
@@ -24,7 +24,7 @@ export default function ShipCross() {
       if (!section) return
       const q = gsap.utils.selector(section)
       if (prefersReducedMotion()) {
-        gsap.set(q('[data-anchor]'), { scale: 0.55 })
+        gsap.set(q('[data-anchor]'), { scale: 0.7, y: window.innerHeight * 0.17 })
         gsap.set(q('[data-caption]'), { opacity: 1 })
         return
       }
@@ -40,14 +40,14 @@ export default function ShipCross() {
         gsap
           .timeline({
             defaults: { ease: 'none' },
-            scrollTrigger: { trigger: section, start: 'top top', end: wide ? '+=280%' : '+=200%', pin: true, scrub: 1 },
+            scrollTrigger: { trigger: section, start: 'top top', end: wide ? '+=220%' : '+=170%', pin: true, scrub: 1 },
           })
           // Apparent size grows faster the nearer she gets, and her
           // waterline drops down the screen toward you.
           .fromTo(
             q('[data-anchor]'),
             { scale: wide ? 0.07 : 0.12, x: 0, y: 0 },
-            { scale: wide ? 2 : 2.4, y: () => window.innerHeight * 0.75, duration: 1, ease: 'power2.in' },
+            { scale: wide ? 0.7 : 1, y: () => window.innerHeight * (wide ? 0.19 : 0.14), duration: 1, ease: 'power2.in' },
             0
           )
           .fromTo(
@@ -56,9 +56,10 @@ export default function ShipCross() {
             { filter: 'brightness(1) contrast(1) saturate(1) blur(0px)', duration: 0.7 },
             0
           )
-          .to(q('[data-words]'), { scale: 1.06, duration: 0.8 }, 0)
-          .to(q('[data-words]'), { opacity: 0, duration: 0.15 }, 0.8)
-          .fromTo(q('[data-caption]'), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.1 }, 0.9)
+          .to(q('[data-words]'), { scale: 1.04, duration: 1 }, 0)
+          .fromTo(q('[data-caption]'), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.15 }, 0.8)
+          // Hold on her there for a moment before the page moves on.
+          .to({}, { duration: 0.25 })
       })
     },
     { scope }
@@ -88,11 +89,11 @@ export default function ShipCross() {
       <div aria-hidden="true" className="absolute inset-x-0 h-24 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,oklch(80%_0.1_65/0.35),transparent_70%)]" style={{ top: `${HORIZON * 100}%` }} />
 
       {/* The headline, up in the sky. */}
-      <div data-words className="pointer-events-none absolute inset-x-0 top-[17%] z-0 px-5 text-center">
+      <div data-words className="pointer-events-none absolute inset-x-0 top-[17%] z-30 px-5 text-center [text-shadow:0_4px_30px_rgb(0_0_0/0.45)]">
         <p className="text-[clamp(3rem,9.5vw,9.5rem)] font-extrabold leading-[0.92] tracking-[-0.05em] text-white">
           One team.
           <br />
-          <span className="text-white/60">Every leg.</span>
+          <span className="text-white/80">Every leg.</span>
         </p>
       </div>
 
@@ -138,7 +139,7 @@ export default function ShipCross() {
       </div>
 
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-1/3 bg-gradient-to-t from-deep/80 to-transparent" />
-      <p data-caption className="absolute inset-x-0 bottom-10 z-30 px-6 text-center text-lg font-semibold text-white opacity-0 md:text-2xl">
+      <p data-caption className="absolute inset-x-0 bottom-10 z-30 px-6 text-center text-lg font-semibold text-white opacity-0 [text-shadow:0_2px_16px_rgb(0_0_0/0.6)] md:text-2xl">
         Booking, customs, trucking and the port call.
         <span className="block text-white/70">One team on your file from gate to gate.</span>
       </p>
